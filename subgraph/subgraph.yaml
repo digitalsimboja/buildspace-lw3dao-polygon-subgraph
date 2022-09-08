@@ -16,12 +16,11 @@ dataSources:
       entities:
         - SkillsNft
         - User
+        - UserSkillsNft
       abis:
         - name: LearnWeb3GraduatesNFT
           file: ./abis/LearnWeb3GraduatesNFT.json
       eventHandlers:
-        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
-          handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleTransferSingle
         - event: URI(string,indexed uint256)
