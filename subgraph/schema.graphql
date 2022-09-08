@@ -2,15 +2,15 @@ type SkillsNft @entity {
  id: ID!
  tokenId: BigInt!
  tokenURI: String!
- tokenValue: BigInt!
+ tokenValue: String!
  createdAtTimestamp: BigInt!
  organization: Bytes! # Organization that issued this SkillNft
- owners: [User!]! 
+ owners: [UserSkillsNft!]! 
 }
  
 type User @entity {
  id: ID! # User address
- skillNfts: [UserSkillsNft!]!
+ skillNfts: [UserSkillsNft!]! 
 }
 
 type UserSkillsNft @entity {

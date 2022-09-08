@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
 import {
   LearnWeb3GraduatesNFT,
   TransferSingle,
@@ -7,24 +7,22 @@ import {
 import { SkillsNft, User, UserSkillsNft } from "../generated/schema";
 
 function getIdFromSkillNftIdInt(param1: Address, param2: BigInt): string {
-  // Create the ID of the skillNft on the Node by concatinating the user address and
-  // the skillNft Id
+  // Create a unique ID for the userSkillNftId by concatinating the userAddress and the skillNftId
   return param1.toHexString() + "-" + param2.toHexString();
 }
 
 export function handleTransferSingle(event: TransferSingle): void {
- 
   // If the userSkillNft does not exist, create it
   const userSkillNftId = getIdFromSkillNftIdInt(
     event.params.to,
     event.params.id
   );
   let userSkillNft = UserSkillsNft.load(userSkillNftId);
-  if(!userSkillNft) {
+  if (!userSkillNft) {
     userSkillNft = new UserSkillsNft(userSkillNftId);
-
+    userSkillNft.id = userSkillNftId;
     userSkillNft.user = event.params.to.toHexString();
-    userSkillNft.skillNft = event.params.id.toHexString();
+    userSkillNft.skillNft = event.params.id.toString();
     userSkillNft.save();
   }
 
@@ -34,24 +32,27 @@ export function handleTransferSingle(event: TransferSingle): void {
   let user = User.load(userAddress);
   if (!user) {
     user = new User(userAddress);
-    user.skillNfts =  new Array<string>()
+    user.skillNfts = new Array<string>();
   }
-  // Update the user's skillNfts data
+
+  // Update the user skillNfts array
   let arrUserSkillNfts = user.skillNfts;
-  arrUserSkillNfts.push(userSkillNft.id)
+  arrUserSkillNfts.push(event.params.to.toHexString());
   user.skillNfts = arrUserSkillNfts;
+
+  // save the user
   user.save();
 
   // If the skillNft does not exist, create it
-  const skillNftId = event.params.id.toHexString();
+  const skillNftId = event.params.id.toString();
   let skillNft = SkillsNft.load(skillNftId);
   if (!skillNft) {
     skillNft = new SkillsNft(skillNftId);
-    skillNft.id = userSkillNft.id;
+    skillNft.id = skillNftId;
     skillNft.organization = event.params.operator;
     skillNft.tokenId = event.params.id;
-    skillNft.tokenValue = event.params.value;
-    skillNft.owners = new Array<string>()
+    skillNft.tokenValue = event.params.value.toString();
+    skillNft.owners = new Array<string>();
     // Get the instance of the LearnWeb3GraduatesNFT Contract
     let LearnWeb3GraduatesNFTContract = LearnWeb3GraduatesNFT.bind(
       event.address
@@ -64,10 +65,9 @@ export function handleTransferSingle(event: TransferSingle): void {
   skillNft.owners = arrSkillsNftOwners;
 
   skillNft.createdAtTimestamp = event.block.timestamp; // To represent the date user received the graduation POK NFT
-   
+
   // Save the new skillNft on the node so we can query it later
   skillNft.save();
-
 }
 
 export function handleURI(event: URI): void {
@@ -75,5 +75,6 @@ export function handleURI(event: URI): void {
   let skillNft = SkillsNft.load(event.params.id.toHexString());
   if (!skillNft) return;
   skillNft.tokenId = event.params.id;
+  skillNft.tokenValue = event.params.value;
   skillNft.save();
 }
