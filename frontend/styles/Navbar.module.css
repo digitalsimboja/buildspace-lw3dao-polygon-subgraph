@@ -1,0 +1,24 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    column-gap: 2em;
+    align-items: center;
+    background-color: #171923;
+    padding: 50px;
+    font-size: 16px;
+   
+  }
+  
+  .navbar a:hover {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  .navbar  a:visited {
+    color: #5D6063;
+    text-decoration: none;
+}
+
+.navbar .brand {
+    color: white;
+}

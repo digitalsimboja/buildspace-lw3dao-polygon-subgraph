@@ -1,0 +1,14 @@
+.main {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.header {
+    height: 600px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #181D29;
+}
+  
