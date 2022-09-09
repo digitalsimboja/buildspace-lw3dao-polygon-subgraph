@@ -2,6 +2,7 @@
 import {
   Box,
   Container,
+  Image,
   Link,
   SimpleGrid,
   Stack,
@@ -11,7 +12,7 @@ import {
 
 const Logo = () => {
   return (
-    <img src='https://learnweb3.io/brand/logo-blue.png' />
+    <Image alt="LearnWeb3DAO logo" src='https://learnweb3.io/brand/logo-blue.png' />
   );
 };
 
@@ -52,7 +53,7 @@ export default function Footer() {
             <ListHeader>Company</ListHeader>
             <Link href={'#'}>About</Link>
             <Link href={'#'}>Work with us</Link>
-            <Link href={'#'}>We're Hiring</Link>
+            <Link href={'#'}>We are Hiring</Link>
             <Link href={'#'}>Buy us a coffer</Link>
            
           </Stack>
