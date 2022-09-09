@@ -11,7 +11,7 @@ type SkillsNft @entity {
  owner: User!
  ownerId: String!
  tokenId: String!
- image: String!
+ metadata: String!
  name: String!
  createdAtTimeStamp: BigInt!
  tokenValue: String
