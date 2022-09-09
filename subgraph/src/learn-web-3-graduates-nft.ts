@@ -2,47 +2,56 @@ import { BigInt } from "@graphprotocol/graph-ts";
 import {
   LearnWeb3GraduatesNFT,
   TransferSingle as TransferSingleEvent,
+  URI
 } from "../generated/LearnWeb3GraduatesNFT/LearnWeb3GraduatesNFT";
-import { SkillNft, User } from "../generated/schema";
+import { SkillsNft, User } from "../generated/schema";
 
 export function handleTransferSingle(event: TransferSingleEvent): void {
-  // Create a unique ID that refers to this listing
-  // Concatenate the User address + the tokenId and the sender address
-  const id =
-    event.params.to.toHex() +
+  const id = event.params.operator.toHex() +
     "-" +
-    event.params.id.toString() +
+    event.block.timestamp.toHexString() + 
     "-" +
-    event.params.from.toHex();
-
-  // If the skillNft does not exist, create it
-  let skillNft = SkillNft.load(id);
-  if (!skillNft) {
-    skillNft = new SkillNft(id);
-    skillNft.organization = event.params.to.toHexString();
-    skillNft.tokenId = event.params.id;
-    skillNft.tokenValue = event.params.value.toString();
-    skillNft.createdAtTimestamp = event.block.timestamp;
+    event.params.id.toHexString();
   
+  // Check if skillNft already exists, if not create it
+  let skillNft = SkillsNft.load(id);
+  if (!skillNft) {
+    skillNft = new SkillsNft(id);
+    skillNft.tokenId = event.params.id.toString();
+    skillNft.tokenValue = event.params.value.toString();
 
     // Get the instance of the LearnWeb3GraduatesNFT contract
     let learnWeb3GraduatesNFTContract = LearnWeb3GraduatesNFT.bind(
       event.address
     );
-    skillNft.tokenURI = learnWeb3GraduatesNFTContract.uri(event.params.id);
+    skillNft.image = learnWeb3GraduatesNFTContract.uri(event.params.id);
+    skillNft.name = learnWeb3GraduatesNFTContract._name;
+    skillNft.createdAtTimeStamp = event.block.timestamp;
+    skillNft.organization = event.params.operator.toHex();
   }
 
-  skillNft.owner = event.params.to.toHexString();
-
-  // Save the skillNft to the Node so we can query it later
-  skillNft.save();
+  // Assign the skillNft to the owner
+  let owner_id = event.params.to.toHex();
+  skillNft.ownerId = owner_id;
+  skillNft.owner = owner_id;
 
   /* If the user does not exist, create it */
-  let user = User.load(event.params.to.toHexString());
+  let user = User.load(owner_id);
   if (!user) {
-    user = new User(event.params.to.toHexString());
-    user.save();
+    user = new User(owner_id);
   }
+
+  // Save the skillNft and the user to the Node so we can query it later
+  skillNft.save();
+  user.save();
 }
 
 
+export function handleURI(event: URI): void {
+  
+  // Try to load the skillNft from the Graph Node
+  let skillNft = SkillsNft.load(event.params.id.toString());
+  if (!skillNft) return
+  skillNft.tokenId = event.params.id.toString();
+  skillNft.save();
+}

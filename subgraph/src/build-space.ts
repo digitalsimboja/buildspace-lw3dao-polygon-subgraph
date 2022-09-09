@@ -1,40 +1,39 @@
+import { BigInt, json, log } from "@graphprotocol/graph-ts";
 import {
   Transfer as TransferEvent,
   BuildSpace,
 } from "../generated/BuildSpace/BuildSpace";
-import { SkillNft, User } from "../generated/schema";
+import { SkillsNft, User } from "../generated/schema";
 
 export function handleTransfer(event: TransferEvent): void {
-  // Create a unique ID that refers to this listing
-  // Concatenate the User address + the tokenId and the sender address
-  const id =
-    event.params.to.toHex() +
-    "-" +
-    event.params.tokenId.toString() +
-    "-" +
-    event.params.from.toHex();
-
+  let skillNftId = event.params.tokenId.toString();
   // Check if skillNft already exists, if not create it
-  let skillNft = SkillNft.load(id);
+  let skillNft = SkillsNft.load(skillNftId);
   if (!skillNft) {
-    skillNft = new SkillNft(id);
-    skillNft.organization = event.params.to.toHexString();
-    skillNft.tokenId = event.params.tokenId;
-    skillNft.createdAtTimestamp = event.block.timestamp;
+    skillNft = new SkillsNft(skillNftId);
+    skillNft.organization = event.params.from.toString();
+    skillNft.tokenId = skillNftId;
 
     // Get the instance of the BuildSpace Contract
+    // to initialize tokenURI, name
     let buildSpaceContract = BuildSpace.bind(event.address);
-    skillNft.tokenURI = buildSpaceContract.tokenURI(event.params.tokenId);
+    skillNft.image = buildSpaceContract.tokenURI(event.params.tokenId);
+    skillNft.name = buildSpaceContract.name();
+    skillNft.createdAtTimeStamp = event.block.timestamp;
   }
-  skillNft.owner = event.params.to.toHexString();
 
-  // Save the skillNft to the Node so we can query it later
-  skillNft.save();
+  // Assign the skillNft to the owner
+  let owner_id = event.params.to.toString();
+  skillNft.ownerId = owner_id;
+  skillNft.owner = owner_id;
 
   /* If the user does not exist, create it */
-  let user = User.load(event.params.to.toHexString());
+  let user = User.load(owner_id);
   if (!user) {
-    user = new User(event.params.to.toHexString());
-    user.save();
+    user = new User(owner_id);
   }
+
+  // Save the skillNft and the user to the Node so we can query it later
+  skillNft.save();
+  user.save();
 }

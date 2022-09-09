@@ -1,6 +1,8 @@
 specVersion: 0.0.4
 schema:
   file: ./schema.graphql
+features:
+  - fullTextSearch
 dataSources:
   - kind: ethereum
     name: LearnWeb3GraduatesNFT
@@ -14,7 +16,7 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - SkillNft
+        - SkillsNft
         - User
       abis:
         - name: LearnWeb3GraduatesNFT

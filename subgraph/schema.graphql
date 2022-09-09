@@ -1,16 +1,25 @@
-type SkillNft @entity {
+type _Schema_
+  @fulltext(
+    name: "tokenSearch"
+    language: en
+    algorithm: rank
+    include: [{ entity: "SkillsNft", fields: [{ name: "ownerId" }] }]
+  )
+
+type SkillsNft @entity {
  id: ID!
- tokenId: BigInt!
- tokenURI: String!
- tokenValue: String
- organization: User! # Organization that issued this SkillNft or the user that created the token
  owner: User!
- createdAtTimestamp: BigInt!
+ ownerId: String!
+ tokenId: String!
+ image: String!
+ name: String!
+ createdAtTimeStamp: BigInt!
+ tokenValue: String
+ organization: String! # Organization that issued this SkillNft or the user that created the token
 }
  
 type User @entity {
  id: ID! # User address
- skillsNft: [SkillNft!] @derivedFrom(field: "owner")
- created: [SkillNft!]! @derivedFrom(field: "organization")
+ skillsNft: [SkillsNft!]! @derivedFrom(field: "owner")
 }
 
