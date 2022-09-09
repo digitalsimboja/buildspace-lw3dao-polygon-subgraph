@@ -1,37 +1,31 @@
-import { BigInt } from "@graphprotocol/graph-ts";
 import {
-  LearnWeb3GraduatesNFT,
-  TransferSingle as TransferSingleEvent,
-} from "../generated/LearnWeb3GraduatesNFT/LearnWeb3GraduatesNFT";
+  Transfer as TransferEvent,
+  BuildSpace,
+} from "../generated/BuildSpace/BuildSpace";
 import { SkillNft, User } from "../generated/schema";
 
-export function handleTransferSingle(event: TransferSingleEvent): void {
+export function handleTransfer(event: TransferEvent): void {
   // Create a unique ID that refers to this listing
   // Concatenate the User address + the tokenId and the sender address
   const id =
     event.params.to.toHex() +
     "-" +
-    event.params.id.toString() +
+    event.params.tokenId.toString() +
     "-" +
     event.params.from.toHex();
 
-  // If the skillNft does not exist, create it
+  // Check if skillNft already exists, if not create it
   let skillNft = SkillNft.load(id);
   if (!skillNft) {
     skillNft = new SkillNft(id);
     skillNft.organization = event.params.to.toHexString();
-    skillNft.tokenId = event.params.id;
-    skillNft.tokenValue = event.params.value.toString();
+    skillNft.tokenId = event.params.tokenId;
     skillNft.createdAtTimestamp = event.block.timestamp;
-  
 
-    // Get the instance of the LearnWeb3GraduatesNFT contract
-    let learnWeb3GraduatesNFTContract = LearnWeb3GraduatesNFT.bind(
-      event.address
-    );
-    skillNft.tokenURI = learnWeb3GraduatesNFTContract.uri(event.params.id);
+    // Get the instance of the BuildSpace Contract
+    let buildSpaceContract = BuildSpace.bind(event.address);
+    skillNft.tokenURI = buildSpaceContract.tokenURI(event.params.tokenId);
   }
-
   skillNft.owner = event.params.to.toHexString();
 
   // Save the skillNft to the Node so we can query it later
@@ -44,5 +38,3 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
     user.save();
   }
 }
-
-

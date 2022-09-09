@@ -1,20 +1,16 @@
-type SkillsNft @entity {
+type SkillNft @entity {
  id: ID!
  tokenId: BigInt!
  tokenURI: String!
- tokenValue: String!
+ tokenValue: String
+ organization: User! # Organization that issued this SkillNft or the user that created the token
+ owner: User!
  createdAtTimestamp: BigInt!
- organization: Bytes! # Organization that issued this SkillNft
- owners: [UserSkillsNft!]! 
 }
  
 type User @entity {
  id: ID! # User address
- skillNfts: [UserSkillsNft!]! 
+ skillsNft: [SkillNft!] @derivedFrom(field: "owner")
+ created: [SkillNft!]! @derivedFrom(field: "organization")
 }
 
-type UserSkillsNft @entity {
-    id: ID! # Set to userAddress.toHexString() + skillNftId.toHexString()
-    user: User!
-    skillNft: SkillsNft!
-}
