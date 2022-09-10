@@ -250,7 +250,7 @@ Run the query below to query for users and their associated NFTs.
 You can also use a named query a specific userId to obtain the list of skillsNfts owned like below:
 
 ```
-query fetchUserNfts ($id: String!) {
+query fetchUserSkillsNfts ($id: String!) {
   users (where: {id: $id}) { # Pass a string value of the user wallet address
     skillsNft {
       name

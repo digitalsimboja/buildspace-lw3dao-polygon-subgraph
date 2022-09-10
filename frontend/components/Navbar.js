@@ -4,10 +4,11 @@ import {
   Text,
   Button,
   Stack,
+  Link,
   useColorModeValue,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectButton, wallet } from "@rainbow-me/rainbowkit";
 
 export default function Navbar() {
   return (
@@ -24,6 +25,7 @@ export default function Navbar() {
         align={"center"}
       >
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
+          <Link href="/">
           <Text
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             fontFamily={"heading"}
@@ -31,6 +33,9 @@ export default function Navbar() {
           >
             LearnWeb3DAO
           </Text>
+
+          </Link>
+          
         </Flex>
 
         <Stack
