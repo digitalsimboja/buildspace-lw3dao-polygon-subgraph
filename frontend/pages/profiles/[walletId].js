@@ -27,19 +27,20 @@ export default function ProofOfKnowledgeDetails() {
   // State variables to contain loading state
   const [loading, setLoading] = useState(true);
 
-  console.log("Extracted WalletId", walletId);
-
   const { isConnected } = useAccount();
-  const { provider } = useProvider();
 
   // Get the connected address
   const { address } = useAccount();
 
-   // Function to fetch userSkillsNfts and set the user's skills
+  // Function to fetch userSkillsNfts and set the user's skills
   async function fetchUserSkillsNfts() {
-
     if (address !== "") {
       setLoading(true);
+
+      // Creae a urql client
+      const urqlClient = createClient({
+        url: SUBGRAPH_URL,
+      });
 
       // The GraphQL query to run
       const userSkillsNftsQuery = `query fetchUserSkillsNftsEnitites {
@@ -52,13 +53,7 @@ export default function ProofOfKnowledgeDetails() {
         }
       }`;
 
-      // Creae a urql client
-      const urqlClient = createClient({
-        url: SUBGRAPH_URL,
-      });
-
       // Send the query to the subgraph GraphQL API, and get the response
-
       const response = await urqlClient.query(userSkillsNftsQuery).toPromise();
 
       console.log(response);
@@ -66,17 +61,16 @@ export default function ProofOfKnowledgeDetails() {
 
       // Update the state variables
       setSkills(userSkillsNftsEntities);
-       console.log("User skills:", userSkillsNftsEntities);
+      console.log("User skills:", userSkillsNftsEntities);
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    if (isConnected ) {
+    if (isConnected && router.query.walletId) {
       fetchUserSkillsNfts();
       setLoading(false);
-    }
-    else {
+    } else {
       setLoading(true);
     }
   }, [isConnected]);
