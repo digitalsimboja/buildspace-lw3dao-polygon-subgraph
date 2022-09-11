@@ -18,22 +18,17 @@ import {
 import {} from "@chakra-ui/react";
 import { TokenKind } from "graphql";
 import { useEffect, useState } from "react";
-import { erc721ABI, useAccount, useContract, useProvider } from "wagmi";
+import { erc721ABI, useAccount, useContract, useProvider, useSigner } from "wagmi";
 
 export default function Listing(props) {
   // state variable to hold the various NFTs from LearnWeb3 and BuildSpace
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState(props.learnWeb3);
   const [buildSpaceNFTs, setBuildspaceNFTs] = useState(props.buildSpace);
 
-  console.log('learnWeb3NFTs: ', learnWeb3NFTs);
-  console.log('buildSpaceNFTs: ', buildSpaceNFTs);
-  
-
-
   // loading state
   const [loading, setLoading] = useState(true);
 
-  // Get the provider, connected address and a contract instance
+  // Get the signer, connected address and a contract instance
   // for the NFT contract using wagmi
   const provider = useProvider();
   const { address } = useAccount();
@@ -54,14 +49,16 @@ export default function Listing(props) {
 
   // Function to update NFT details from the contract
   async function updateTokenURI() {
+    setLoading(true);
     try {
       // map through the POKNfts and update the image fields
       if (props.nftLearnWeb3Address) {
         const updatedLearnWeb3NFTs = learnWeb3NFTs.map(async (l, i) => {
-          let tokenURI = await LearnWeb3Contract.uri(i);
+          //TODO: Fix CORS related issued and enable this
+          let tokenURI = await LearnWeb3Contract.tokenURI(i);
+
           // If it's an IPFS URI, replace it with an HTTP Gateway link
           tokenURI = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-          l.tokenURI = tokenURI;
           
           // Fetch the metadata given the tokenURI
           const metadata = await fetch(tokenURI);
@@ -75,17 +72,18 @@ export default function Listing(props) {
           image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
           // Add the image field to the skillNft
-          l['image'] = image;      
+          l['image'] = image;    
         });
         setLearnWeb3NFTs(updatedLearnWeb3NFTs);
       }
 
       if (props.nftBuildSpaceAddress) {
         const updatedBuildSpaceNFTs = buildSpaceNFTs.map(async (l, i) => {
+          //TODO: Fix CORS related issued and enable this
           let tokenURI = await BuildSpaceContract.tokenURI(i);
-           // If it's an IPFS URI, replace it with an HTTP Gateway link
-           tokenURI = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-           l.tokenURI = tokenURI;
+           
+          // If it's an IPFS URI, replace it with an HTTP Gateway link
+          tokenURI = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
            
            // Fetch the metadata given the tokenURI
            const metadata = await fetch(tokenURI);
@@ -99,24 +97,25 @@ export default function Listing(props) {
            image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
  
            // Add the image field to the skillNft
-           l['image'] = image;   
+           l['image'] = image;
+           
         });
         setBuildspaceNFTs(updatedBuildSpaceNFTs);
       }
-
-      setLoading(false);
     } catch (error) {
       console.error(error);
       setLoading(false);
     }
   }
 
+  console.log('updatedBuildSpaceNFTs: ', buildSpaceNFTs);
+  console.log('learnWeb3NFTs: ', learnWeb3NFTs);
+
   useEffect(() => {
-    if (isConnected && address && loading) {
+    if (isConnected && address) {
       updateTokenURI();
-    } else {
       setLoading(false);
-    }   
+    }
   
   }, [isConnected, address]);
 
@@ -125,23 +124,25 @@ export default function Listing(props) {
       <Box>
         <Text>LearnWeb3 Graduate Experience</Text>
       </Box>
-      {props.nftLearnWeb3Address ? (
-        <Flex gap={"1rem"} overflowX={"auto"} width={"100%"}>
-        <SimpleGrid columns={[6, null]} spacing="20px" boxShadow={"2xl"} ml={2}>
-            {/*Insert before cors here */}
-        </SimpleGrid>
-      </Flex>
-      ) : (<Box>Loading... </Box>)}
+      {loading && props.nftLearnWeb3Address ? (
+        <Box>Loading...</Box>
+      ) : (<Flex gap={"1rem"} overflowX={"auto"} width={"100%"}>
+      <SimpleGrid columns={[6, null]} spacing="20px" boxShadow={"2xl"} ml={2}>
+          {/*Insert learnweb3 here before cors here */}
+      </SimpleGrid>
+    </Flex>)}
       
       <Divider mt={12} mb={12} />
       <Box>
         <Text>Buildspace Proof of knowledge</Text>
       </Box>
-      {props.nftBuildSpaceAddress ? (<Flex gap={"1rem"} overflowX={"auto"} width={"100%"}>
+      {loading && props.nftBuildSpaceAddress ? (<Box>Loading... </Box>) : (
+        <Flex gap={"1rem"} overflowX={"auto"} width={"100%"}>
         <SimpleGrid columns={[6, null]} spacing="20px" boxShadow={"2xl"} ml={2}>
-          {/*Insert before cors here */}
+          {/*Insert Buildspace before cors here */}
         </SimpleGrid>
-      </Flex>) : (<Box>Loading...</Box>)}
+      </Flex>
+      )}
       
     </Box>
   );

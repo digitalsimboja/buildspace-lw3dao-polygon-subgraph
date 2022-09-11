@@ -46,8 +46,8 @@ export default function ProofOfKnowledgeDetails() {
   const walletId = router.query.walletId;
 
   // state variables to contain the userSkillsNfts
-  const [buildspaceNFTs, setBuildspaceNFTs] = useState("");
-  const [learnWeb3NFTs, setLearnWeb3NFTs] = useState("");
+  const [buildspaceNFTs, setBuildspaceNFTs] = useState([]);
+  const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
 
   // State variables to contain loading state
   const [loading, setLoading] = useState(true);
@@ -98,24 +98,28 @@ export default function ProofOfKnowledgeDetails() {
       */
 
       // Send the query to the subgraph GraphQL API, and get the response
-      const response = await urqlClient.query(userSkillsNftsQuery).toPromise();
+      //TODO: Fix cors related issues
+      //const response = await urqlClient.query(userSkillsNftsQuery).toPromise();
+      const response = SKILLNFTS;
 
-      console.log('Response: ', response);
-      const userSkillsNftsEntities =
-      response.fetchUserSkillsNftsEnitites.data.skillsNft;
+      const userSkillsNftsEntities = response;
     
       // Update the state variables
       // TODO: filter by organization
       let buildSpaceNFTsPOK = userSkillsNftsEntities.filter(
-        (l) => l.organization.toLowerCase() === "buildspace"
+        (l) => l.organization === "buildspace"
       );
       let learnWeb3GraduateNFTs = userSkillsNftsEntities.filter(
-        (l) => l.organization.toLowerCase() === "learnWeb3graduatesnft"
+        (l) => l.organization === "LearnWeb3GraduatesNFT"
       );
+
       setBuildspaceNFTs(buildSpaceNFTsPOK);
       setLearnWeb3NFTs(learnWeb3GraduateNFTs);
-      setLoading(false);
     }
+  }
+
+  async function goHome() {
+    return router.push("/");
   }
 
   useEffect(() => {
@@ -123,7 +127,7 @@ export default function ProofOfKnowledgeDetails() {
       fetchUserSkillsNfts();
       setLoading(false);
     } else {
-      setLoading(true);
+      goHome();
     }
   }, [router, isConnected]);
 
@@ -179,12 +183,13 @@ export default function ProofOfKnowledgeDetails() {
         <Divider mt={12} mb={12} />
 
         {/* Show the listing of the proof of knowledge */}
-        <Listing
+        {loading ? (<span>Loading...</span>) : (<Listing
           nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
           nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
           learnWeb3={learnWeb3NFTs}
           buildSpace={buildspaceNFTs}
-        />
+        />)}
+        
       </Box>
     </>
   );
