@@ -13,8 +13,20 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { createClient } from "urql";
 import { erc721ABI, useAccount, useContract, useProvider } from "wagmi";
+import useSwr from "swr";
 import Navbar from "../../components/Navbar";
 import { SUBGRAPH_URL } from "../../constants";
+
+const fetcher = (query) =>
+  fetch('/api/profiles[walletId]', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  })
+    .then((res) => res.json())
+    .then((json) => json.data)
 
 export default function ProofOfKnowledgeDetails() {
   // Extract the user wallet address from the URL

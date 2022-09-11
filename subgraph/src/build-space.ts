@@ -1,15 +1,14 @@
 import { BigInt, json, log } from "@graphprotocol/graph-ts";
 import {
   Transfer as TransferEvent,
-  BuildSpace,
+  BuildSpace as BuildSpaceContract,
 } from "../generated/BuildSpace/BuildSpace";
 import { SkillsNft, User } from "../generated/schema";
 
 export function handleTransfer(event: TransferEvent): void {
-  // Create a unique ID for the skillNft by concatinating the sender's address,
+  // Create a unique ID for the skillNft by concating the sender's address,
   // the timestamp NFT was issued and the NFT tokenId
-  const id =
-    event.params.tokenId.toString() + "-" + event.block.timestamp.toHexString();
+  const id = event.transaction.hash.toHexString();
 
   // Check if skillNft already exists, if not create it
   let skillNft = SkillsNft.load(id);
@@ -19,11 +18,9 @@ export function handleTransfer(event: TransferEvent): void {
 
     // Get the instance of the BuildSpace Contract
     // to initialize tokenURI, name
-    let buildSpaceContract = BuildSpace.bind(event.address);
-    skillNft.metadata = buildSpaceContract.tokenURI(event.params.tokenId);
-    skillNft.name = buildSpaceContract.name();
-    skillNft.createdAtTimeStamp = event.block.timestamp;
-    skillNft.organization = event.params.from.toHex();
+    let buildSpaceContract = BuildSpaceContract.bind(event.address);
+    skillNft.tokenURI = buildSpaceContract.tokenURI(event.params.tokenId);
+    skillNft.organization = buildSpaceContract.name();
   }
 
   // Assign the skillNft to the owner
@@ -34,8 +31,6 @@ export function handleTransfer(event: TransferEvent): void {
   if (!user) {
     user = new User(owner_id);
   }
-
-  skillNft.ownerId = owner_id;
   skillNft.owner = owner_id;
 
   // Save the skillNft and the user to the Node so we can query it later

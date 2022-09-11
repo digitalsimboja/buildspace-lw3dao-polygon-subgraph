@@ -1,17 +1,13 @@
 type SkillsNft @entity {
  id: ID!
  owner: User!
- ownerId: String!
  tokenId: String!
- metadata: String!
- name: String!
- createdAtTimeStamp: BigInt!
- tokenValue: String
+ tokenURI: String!
  organization: String! # Organization that issued this SkillNft or the user that created the token
 }
  
 type User @entity {
  id: ID! # User address
- skillsNft: [SkillsNft!]! @derivedFrom(field: "owner")
+ skillNFTs: [SkillsNft!]! @derivedFrom(field: "owner")
 }
 
