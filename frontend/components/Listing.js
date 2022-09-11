@@ -6,6 +6,7 @@ import {
   Flex,
   Divider,
   Heading,
+  SimpleGrid,
   chakra,
   Grid,
   Text,
@@ -108,8 +109,11 @@ export default function Listing(props) {
       <Box>
         <Text>Proof of Experience</Text>
       </Box>
+      
       <Flex gap={"1rem"}>
+      <SimpleGrid columns={[6, null, ]} spacing='20px'>
         {proofOfKnowledge.map((skill, i) => (
+         
           <Flex
             key={i}
             flexDir={"column"}
@@ -123,8 +127,11 @@ export default function Listing(props) {
             <Text as={"span"}>{skill.organization}</Text>
             <Text as={"p"}>{skill.tokenId}</Text>
           </Flex>
+          
         ))}
+        </SimpleGrid>
       </Flex>
+      
     </Box>
   );
 }
