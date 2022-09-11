@@ -46,7 +46,8 @@ export default function ProofOfKnowledgeDetails() {
   const walletId = router.query.walletId;
 
   // state variables to contain the userSkillsNfts
-  const [skills, setSkills] = useState(SKILLNFTS);
+  const [buildspaceNFTs, setBuildspaceNFTs] = useState("");
+  const [learnWeb3NFTs, setLearnWeb3NFTs] = useState("");
 
   // State variables to contain loading state
   const [loading, setLoading] = useState(true);
@@ -58,55 +59,86 @@ export default function ProofOfKnowledgeDetails() {
 
   // Function to fetch userSkillsNfts and set the user's skills
   async function fetchUserSkillsNfts() {
-    if (address !== "") {
+    if (isConnected && address ) {
       setLoading(true);
-
-      // Creae a urql client
+      
+      // Create a urql client
       const urqlClient = createClient({
         url: SUBGRAPH_URL,
       });
 
       // The GraphQL query to run
       const userSkillsNftsQuery = `query fetchUserSkillsNftsEnitites {
-        users (where: {id: "${walletId}"}) {
-          skillsNft {
-            name
+        users (where: {id: "0x083fe503ea4e6319bf5fd710316124a36e13bda9"})  {
+          id
+          skillNFTs {
+            id
             organization
-            metadata
+            tokenURI
+            tokenId
           }
         }
       }`;
 
+       // We want to avoid sending two queries to the subgraph, so we fetch all user's skillNFTs and filter at the frontend
+      /*
+      let org1 = "buildspace";
+      let org2 = "learnweb3";
+
+      const userSkillsNftsQuery = `query fetchUserSkillsNftsEnitites {
+        users (where: {id: "${walletId}"}) {
+          skillsNft(where: {organization.toLowerCase(): org1}) { #we might repeat same for org2
+            id
+            organization
+            tokenURI
+            tokenId
+          }
+        }
+      }`;
+      */
+
       // Send the query to the subgraph GraphQL API, and get the response
       const response = await urqlClient.query(userSkillsNftsQuery).toPromise();
 
-      console.log(response);
-      const userSkillsNftsEntities = response.fetchUserSkillsNftsEnitites;
-
+      console.log('Response: ', response);
+      const userSkillsNftsEntities =
+      response.fetchUserSkillsNftsEnitites.data.skillsNft;
+    
       // Update the state variables
       // TODO: filter by organization
-      //let buildSpaceNFTs = userSkillsNftsEntities.filter()
-      setSkills(userSkillsNftsEntities);
-      console.log("User skills:", userSkillsNftsEntities);
+      let buildSpaceNFTsPOK = userSkillsNftsEntities.filter(
+        (l) => l.organization.toLowerCase() === "buildspace"
+      );
+      let learnWeb3GraduateNFTs = userSkillsNftsEntities.filter(
+        (l) => l.organization.toLowerCase() === "learnWeb3graduatesnft"
+      );
+      setBuildspaceNFTs(buildSpaceNFTsPOK);
+      setLearnWeb3NFTs(learnWeb3GraduateNFTs);
       setLoading(false);
     }
   }
 
   useEffect(() => {
     if (isConnected && router.query.walletId) {
-      //fetchUserSkillsNfts();
-      setSkills[SKILLNFTS];
-      //setLoading(false);
-    } /*else {
+      fetchUserSkillsNfts();
+      setLoading(false);
+    } else {
       setLoading(true);
-    }*/
-  }, [isConnected]);
+    }
+  }, [router, isConnected]);
 
   return (
     <>
       {/* Add a Navbar */}
       <Navbar />
-      <Box as={Container} maxW="5xl" p={4}>
+      <Box
+        rounded={"3xl"}
+        as={Container}
+        maxW="5xl"
+        p={4}
+        h="200px"
+        bgGradient="linear(to-l, #7928CA, #FF0080)"
+      >
         <Grid
           templateColumns={{
             base: "repeat(1, 1fr)",
@@ -115,7 +147,6 @@ export default function ProofOfKnowledgeDetails() {
           }}
           gap={4}
           w={"full"}
-          bg={useColorModeValue("#378490", "gray:800")}
         >
           <GridItem colSpan={1}>
             <VStack alignItems="flex-start" spacing="20px">
@@ -148,7 +179,12 @@ export default function ProofOfKnowledgeDetails() {
         <Divider mt={12} mb={12} />
 
         {/* Show the listing of the proof of knowledge */}
-        <Listing skills={skills} />
+        <Listing
+          nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
+          nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
+          learnWeb3={learnWeb3NFTs}
+          buildSpace={buildspaceNFTs}
+        />
       </Box>
     </>
   );
