@@ -12,11 +12,9 @@ export default function Home() {
   const { isConnected } = useAccount();
   const { address } = useAccount();
 
-    
   async function showUserProfile() {
     if (address) {
       return router.push(`profiles/${address}`);
-
     }
   }
 
@@ -31,12 +29,12 @@ export default function Home() {
     } else {
       goHome();
     }
-  }, [isConnected])
+  }, [isConnected]);
 
   return (
     <>
       {/* Add the Navbar */}
-   
+
       <Navbar />
       <Hero />
       <Footer />
