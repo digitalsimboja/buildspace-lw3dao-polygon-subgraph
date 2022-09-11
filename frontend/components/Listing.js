@@ -79,7 +79,6 @@ export default function Listing(props) {
       });
       // update the state variables
       setLearnWeb3NFTs(updatedLearnWeb3NFTs);
-      console.log('learnweb3', learnWeb3NFTs)
     }
   }
 
@@ -104,7 +103,6 @@ export default function Listing(props) {
         l.tokenURI = image;
       });
       setBuildspaceNFTs(updatedBuildSpaceNFTs);
-      console.log('buildSpaceNFTs', buildSpaceNFTs)
     }
   }
 
@@ -133,6 +131,11 @@ export default function Listing(props) {
             ml={2}
           >
             {/*Insert learnweb3 here before cors here */}
+            {learnWeb3NFTs.map((l, i) => {
+              <Box key={i}>{
+                <Image src={l.tokenURI} />
+              }</Box>
+            })}
           </SimpleGrid>
         </Flex>
       )}
