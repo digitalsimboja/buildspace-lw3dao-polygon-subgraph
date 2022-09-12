@@ -51,36 +51,93 @@ export default function ProofOfKnowledgeDetails() {
   const walletId = router.query.walletId;
   const { isConnected } = useAccount();
 
-  // state variable to setData
-  const [buildspaceNFTs, setBuildspaceNFTs] = useState([]);
-  const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
-
   const { loading, data, error } = useQuery(profilesQuery);
 
-  
   if (error) {
-    console.error(error)
+    console.error(error);
   }
 
-  if (!loading && !error && data ) {
-    
-    const extractedSkillNFTs = data.users;
-    console.log("SUBGRAPH DATA, ", extractedSkillNFTs);
+  if (!loading && !error && data) {
+    const extractedSkillNFTs = data.users[0]['skillNFTs'];
 
-    let buildSpaceNFTsPOK = extractedSkillNFTs.filter(
+    
+    let buildspaceNFTs = extractedSkillNFTs.filter(
       (l) => l.organization === "buildspace"
     );
 
-    let learnWeb3GraduateNFTs = extractedSkillNFTs.filter(
+    let learnWeb3NFTs = extractedSkillNFTs.filter(
       (l) => l.organization === "LearnWeb3GraduatesNFT"
     );
 
-    // Update the state variables
-    setBuildspaceNFTs(buildSpaceNFTsPOK);
-    setLearnWeb3NFTs(learnWeb3GraduateNFTs);
+    console.log('extractedSkillNFTs', extractedSkillNFTs)
+    console.log("SUBGRAPH learnWeb3NFTs DATA, ", learnWeb3NFTs);
+    console.log("SUBGRAPH buildspaceNFTs DATA, ", buildspaceNFTs);
 
+    return (
+      <>
+        {/* Add the Navbar */}
+        <Navbar />
+        <Box
+          rounded={"3xl"}
+          as={Container}
+          maxW="5xl"
+          p={4}
+          h="200px"
+          bgGradient="linear(to-l, #7928CA, #FF0080)"
+        >
+          <Grid
+            templateColumns={{
+              base: "repeat(1, 1fr)",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(2, 1fr)",
+            }}
+            gap={4}
+            w={"full"}
+          >
+            <GridItem colSpan={1}>
+              <VStack alignItems="flex-start" spacing="20px">
+                <Image
+                  borderRadius="full"
+                  boxSize="150px"
+                  src="https://bit.ly/dan-abramov"
+                  alt="Dan Abramov"
+                />
+                <Box p={6}>
+                  <Stack spacing={0} align={"center"} mb={5}>
+                    <Heading
+                      fontSize={"2xl"}
+                      fontWeight={500}
+                      fontFamily={"body"}
+                    >
+                      John Doe
+                    </Heading>
+                    <Text color={"gray:500"}>Fullstack Developer</Text>
+                  </Stack>
+                </Box>
+              </VStack>
+            </GridItem>
+            <GridItem>
+              <Flex>
+                <chakra.h1 fontSize={"3xl"}></chakra.h1>
+              </Flex>
+            </GridItem>
+          </Grid>
+          <Divider mt={12} mb={12} />
+          {/* Display the listing of NFT skills */}
+          <Listing  
+          nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
+          nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
+          learnWeb3={learnWeb3NFTs}
+          buildSpace={buildspaceNFTs}
 
+          />
+
+        </Box>
+      </>
+    );
   }
+}
+
 /*
   async function goHome() {
     return router.push("/");
@@ -91,72 +148,3 @@ export default function ProofOfKnowledgeDetails() {
     }
   }, [isConnected, router])
 */
-
-  return (
-    <>
-      {/* Add a Navbar */}
-      <Navbar />
-      <Box
-        rounded={"3xl"}
-        as={Container}
-        maxW="5xl"
-        p={4}
-        h="200px"
-        bgGradient="linear(to-l, #7928CA, #FF0080)"
-      >
-        <Grid
-          templateColumns={{
-            base: "repeat(1, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(2, 1fr)",
-          }}
-          gap={4}
-          w={"full"}
-        >
-          <GridItem colSpan={1}>
-            <VStack alignItems="flex-start" spacing="20px">
-              <Image
-                borderRadius="full"
-                boxSize="150px"
-                src="https://bit.ly/dan-abramov"
-                alt="Dan Abramov"
-              />
-              <Box p={6}>
-                <Stack spacing={0} align={"center"} mb={5}>
-                  <Heading
-                    fontSize={"2xl"}
-                    fontWeight={500}
-                    fontFamily={"body"}
-                  >
-                    John Doe
-                  </Heading>
-                  <Text color={"gray:500"}>Fullstack Developer</Text>
-                </Stack>
-              </Box>
-            </VStack>
-          </GridItem>
-          <GridItem>
-            <Flex>
-              <chakra.h1 fontSize={"3xl"}></chakra.h1>
-            </Flex>
-          </GridItem>
-        </Grid>
-        <Divider mt={12} mb={12} />
-
-        {/* Show the listing of the proof of knowledge */}
-        {loading ? (
-          <span>Loading...</span>
-        ) : (
-          <Listing
-            nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
-            nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
-            learnWeb3={learnWeb3NFTs}
-            buildSpace={buildspaceNFTs}
-          />
-        )}
-      </Box>
-    </>
-  );
-
-  
-}

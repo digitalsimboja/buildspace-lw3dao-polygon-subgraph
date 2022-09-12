@@ -63,15 +63,17 @@ const appolloClient = new ApolloClient({
 
 function MyApp({ Component, pageProps }) {
   return (
+    <ApolloProvider client={appolloClient}>
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
-      <ApolloProvider client={appolloClient}>
+      
         <ChakraProvider>
           <Component {...pageProps} />
         </ChakraProvider>
-        </ApolloProvider>
+        
       </RainbowKitProvider>
     </WagmiConfig>
+    </ApolloProvider>
   );
 }
 
