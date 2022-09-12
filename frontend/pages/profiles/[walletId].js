@@ -56,6 +56,12 @@ export default function ProofOfKnowledgeDetails() {
   if (error) {
     console.error(error);
   }
+  const fetchedData = () => {
+    data.then((a) => {
+      console.log(a);
+    });
+  };
+  
 
   if (!loading && !error && data) {
     const extractedSkillNFTs = data.users[0]["skillNFTs"];

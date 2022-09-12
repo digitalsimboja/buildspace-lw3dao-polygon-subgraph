@@ -17,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import {} from "@chakra-ui/react";
 import { TokenKind } from "graphql";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   erc721ABI,
@@ -32,11 +32,8 @@ export default function Listing(props) {
   const router = useRouter();
   const walletId = router.query.walletId;
   // state variable to hold the various NFTs from LearnWeb3 and BuildSpace
-  const [learnWeb3NFTs, setLearnWeb3NFTs] = useState(props.learnWeb3);
-  const [buildSpaceNFTs, setBuildspaceNFTs] = useState(props.buildSpace);
-
-  console.log("SUBGRAPH learnWeb3NFTs DATA, ", learnWeb3NFTs);
-  console.log("SUBGRAPH buildspaceNFTs DATA, ", buildSpaceNFTs);
+  const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
+  const [buildSpaceNFTs, setBuildspaceNFTs] = useState([]);
 
   // loading state
   const [loading, setLoading] = useState(true);
@@ -59,6 +56,17 @@ export default function Listing(props) {
     contractInterface: erc721ABI,
     signerOrProvider: provider,
   });
+
+  // function to await props values
+  const updateLearnWeb3State = async () => {
+    const lWeb3 = await props.learnWeb3;
+    setLearnWeb3NFTs(lWeb3);
+  };
+
+  const updateBuildSpaceState = async () => {
+    const bld = await props.buildSpace;
+    setBuildspaceNFTs(bld);
+  };
 
   // Function to update NFT details from the contract
   async function updateLearnWeb3NFTsTokenURI() {
@@ -117,49 +125,39 @@ export default function Listing(props) {
     }
   }
 
+  console.log('learnWeb3NFTs', learnWeb3NFTs)
+  console.log('buildSpaceNFTs', buildSpaceNFTs)
+
   async function goHome() {
     return router.push("/");
   }
 
   // Load listing and NFT data on page load
-  useEffect(
-    () => {
-      // Check  if data received from the profile if still in pending state
-      if (props.learnWeb3 && props.buildSpace ) {
-        setBuildspaceNFTs(props.buildSpace);
-        setLearnWeb3NFTs(props.learnWeb3);
-        setLoading(false);
-      } else {
-        setLoading(true);
-      }
-      if (router.query.walletId  && provider && isConnected) {
-        Promise.all([updateBuildSpaceNFTsTokenURI(), updateLearnWeb3NFTsTokenURI()]).finally(() =>
-          setLoading(false)
-        );
-      } else {
-        goHome();
-      }
-    }, [learnWeb3NFTs,  buildSpaceNFTs ]
-  );
-
-  /*
-    // Load listing and NFT data on page load
-    useEffect(() => {
-      if (router.query.walletId  && provider && isConnected) {
-        Promise.all([updateBuildSpaceNFTsTokenURI(), updateLearnWeb3NFTsTokenURI()]).finally(() =>
-          setLoading(false)
-        );
-      }
-    }, [router, provider]);
-
-    */
+  useEffect(() => {
+    updateBuildSpaceState();
+    updateLearnWeb3State();
+    if (
+      learnWeb3NFTs &&
+      buildSpaceNFTs &&
+      router.query.walletId &&
+      provider &&
+      isConnected
+    ) {
+      Promise.all([
+        updateBuildSpaceNFTsTokenURI(),
+        updateLearnWeb3NFTsTokenURI(),
+      ]).finally(() => setLoading(false));
+    } else if (!isConnected && !router.query.walletId) {
+      goHome();
+    }
+  }, [isConnected, router]);
 
   return (
     <Box as={Container} maxW="5xl" mt={14} p={4}>
       <Box>
         <Text>LearnWeb3 Graduate Experience</Text>
       </Box>
-      {props.learnWeb3 ? (
+      {learnWeb3NFTs ? (
         <SimpleGrid columns={[6, null]} spacing="20px">
           {learnWeb3NFTs.map((skill, i) => {
             <Flex key={i} flexDir={"column"}>
