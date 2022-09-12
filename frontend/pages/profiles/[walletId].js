@@ -32,7 +32,7 @@ import {
 // The GraphQL query to run
 const profilesQuery = gql`
   query fetchUserSkillsNftsEnitites {
-    users(where: { id: "0x083fe503ea4e6319bf5fd710316124a36e13bda9" }) {
+    users(id: $id) {
       id
       skillNFTs {
         id
@@ -51,7 +51,7 @@ export default function ProofOfKnowledgeDetails() {
   const walletId = router.query.walletId;
   const { isConnected } = useAccount();
 
-  const { loading, data, error } = useQuery(profilesQuery);
+  const { loading, data, error } = useQuery(profilesQuery, {variables: {id: {walletId}}});
 
   if (error) {
     console.error(error);
