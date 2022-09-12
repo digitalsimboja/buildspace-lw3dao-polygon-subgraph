@@ -62,8 +62,9 @@ export default function Listing(props) {
     // map through the POKNfts and update the image fields
     if (props.nftLearnWeb3Address) {
       const updatedLearnWeb3NFTs = learnWeb3NFTs.map(async (l, i) => {
-      //TODO: Fix CORS related issued and enable this
-      //let tokenURI = await LearnWeb3Contract.tokenURI(i);
+        try {
+          //TODO: Fix CORS related issued and enable this
+        //let tokenURI = await LearnWeb3Contract.tokenURI(i);
         let tokenURI = await l.tokenURI;
 
         tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
@@ -71,14 +72,20 @@ export default function Listing(props) {
         const metadata = await fetch(tokenURI);
         const metadataJSON = await metadata.json();
 
-        let image = metadataJSON.image;
-        image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
+        let image = await metadataJSON.image;
+        image = await  image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
         // Replace the tokenURI with the updated image url
-        l.tokenURI = image;
+        l.tokenURI =  await image;
+
+        } catch (error) {
+          console.error(error);
+        }
+        
       });
       // update the state variables
       setLearnWeb3NFTs(updatedLearnWeb3NFTs);
+ 
     }
   }
 
@@ -87,7 +94,8 @@ export default function Listing(props) {
     // map through the POKNfts and update the image fields
     if (props.nftBuildSpaceAddress) {
       const updatedBuildSpaceNFTs = buildSpaceNFTs.map(async (l, i) => {
-        //TODO: Fix CORS related issued and enable this
+        try {
+           //TODO: Fix CORS related issued and enable this
         //let tokenURI = await BuildSpaceContract.tokenURI(i);
         let tokenURI = await l.tokenURI;
 
@@ -96,69 +104,87 @@ export default function Listing(props) {
         const metadata = await fetch(tokenURI);
         const metadataJSON = await metadata.json();
 
-        let image = metadataJSON.image;
-        image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
+        let image = await metadataJSON.image;
+        image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
         // Replace the tokenURI with the updated image url
-        l.tokenURI = image;
+        l.tokenURI = await image;
+
+        } catch (error) {
+          console.error(error);
+        }
+       
       });
       setBuildspaceNFTs(updatedBuildSpaceNFTs);
+     
     }
   }
 
-    // Load listing and NFT data on page load
-    useEffect(() => {
-      if (router.query.walletId  && provider && isConnected) {
-        Promise.all([updatebuildSpaceNFTsTokenURI(), updatelearnWeb3NFTsTokenURI()]).finally(() =>
-          setLoading(false)
-        );
-      }
-    }, [router, provider]);
+  async function goHome() {
+    return router.push("/");
+  }
 
-    return (
-      <Box as={Container} maxW="5xl" mt={14} p={4}>
-        <Box>
-          <Text>LearnWeb3 Graduate Experience</Text>
-        </Box>
-        {loading ? (
-          <SimpleGrid columns={[6, null]} spacing="20px">
-            {learnWeb3NFTs.map((skill, i) => {
-              <Flex key={i} flexDir={"column"}>
-                <Image src={""} alt="Loading..." />
-              </Flex>;
-            })}
-          </SimpleGrid>
-        ) : (
-          <SimpleGrid columns={[6, null]} spacing="20px">
-            {learnWeb3NFTs.map((skill, i) => {
-              <Flex key={i} flexDir={"column"}>
-                <Image src={skill.image} />
-              </Flex>;
-            })}
-          </SimpleGrid>
-        )}
-  
-        <Divider mt={12} mb={12} />
-        <Box>
-          <Text>Buildspace Proof of knowledge</Text>
-        </Box>
-        {loading ? (
-          <SimpleGrid columns={[6, null]} spacing="20px">
-            {buildSpaceNFTs.map((skill, i) => {
-              <Flex key={i} flexDir={"column"}>
-                <Image src={""} alt="Loading..." />
-              </Flex>;
-            })}
-          </SimpleGrid>
-        ) : (
-          <SimpleGrid columns={[6, null]} spacing="20px">
-            {buildSpaceNFTs.map((skill, i) => {
-              <Flex key={i} flexDir={"column"}>
-                <Image src={skill.image} />
-              </Flex>;
-            })}
-          </SimpleGrid>
-        )}
+ // Load listing and NFT data on page load
+ useEffect(() => {
+  if (isConnected && router.query.walletId) {
+      updatelearnWeb3NFTsTokenURI();
+  } else {
+    goHome();
+  }
+}, [isConnected], router);
+
+  useEffect(() => {
+    if (isConnected && router.query.walletId) {
+      updatebuildSpaceNFTsTokenURI();
+    } else {
+      goHome();
+    }
+  }, [isConnected, router]);
+
+  return (
+    <Box as={Container} maxW="5xl" mt={14} p={4}>
+      <Box>
+        <Text>LearnWeb3 Graduate Experience</Text>
       </Box>
-    );
+      {props.learnWeb3 ? (
+        <SimpleGrid columns={[6, null]} spacing="20px">
+          {learnWeb3NFTs.map((skill, i) => {
+            <Flex key={i} flexDir={"column"}>
+              <Image src={""} alt="Loading..." />
+            </Flex>;
+          })}
+        </SimpleGrid>
+      ) : (
+        <SimpleGrid columns={[6, null]} spacing="20px">
+          {learnWeb3NFTs.map((skill, i) => {
+            <Flex key={i} flexDir={"column"}>
+              <Image src={skill.image} />
+            </Flex>;
+          })}
+        </SimpleGrid>
+      )}
+
+      <Divider mt={12} mb={12} />
+      <Box>
+        <Text>Buildspace Proof of knowledge</Text>
+      </Box>
+      {props.buildSpace ? (
+        <SimpleGrid columns={[6, null]} spacing="20px">
+          {buildSpaceNFTs.map((skill, i) => {
+            <Flex key={i} flexDir={"column"}>
+              <Image src={""} alt="Loading..." />
+            </Flex>;
+          })}
+        </SimpleGrid>
+      ) : (
+        <SimpleGrid columns={[6, null]} spacing="20px">
+          {buildSpaceNFTs.map((skill, i) => {
+            <Flex key={i} flexDir={"column"}>
+              <Image src={skill.image} />
+            </Flex>;
+          })}
+        </SimpleGrid>
+      )}
+    </Box>
+  );
 }
