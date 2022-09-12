@@ -35,6 +35,9 @@ export default function Listing(props) {
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState(props.learnWeb3);
   const [buildSpaceNFTs, setBuildspaceNFTs] = useState(props.buildSpace);
 
+  console.log("SUBGRAPH learnWeb3NFTs DATA, ", learnWeb3NFTs);
+  console.log("SUBGRAPH buildspaceNFTs DATA, ", buildSpaceNFTs);
+
   // loading state
   const [loading, setLoading] = useState(true);
 
@@ -61,31 +64,28 @@ export default function Listing(props) {
   async function updateLearnWeb3NFTsTokenURI() {
     // map through the POKNfts and update the image fields
     if (props.nftLearnWeb3Address) {
-      const updatedLearnWeb3NFTs = learnWeb3NFTs.map(async (l, i) => {
+      const updatedLearnWeb3NFTs = await learnWeb3NFTs.map(async (l, i) => {
         try {
           //TODO: Fix CORS related issued and enable this
-        //let tokenURI = await LearnWeb3Contract.tokenURI(i);
-        let tokenURI = await l.tokenURI;
+          //let tokenURI = await LearnWeb3Contract.tokenURI(i);
+          let tokenURI = await l.tokenURI;
 
-        tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+          tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-        const metadata = await fetch(tokenURI);
-        const metadataJSON = await metadata.json();
+          const metadata = await fetch(tokenURI);
+          const metadataJSON = await metadata.json();
 
-        let image = await metadataJSON.image;
-        image = await  image.replace("ipfs://", "https://ipfs.io/ipfs/");
+          let image = await metadataJSON.image;
+          image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-        // Replace the tokenURI with the updated image url
-        l.tokenURI =  await image;
-
+          // Replace the tokenURI with the updated image url
+          l.tokenURI = await image;
         } catch (error) {
           console.error(error);
         }
-        
       });
       // update the state variables
       setLearnWeb3NFTs(updatedLearnWeb3NFTs);
- 
     }
   }
 
@@ -95,28 +95,25 @@ export default function Listing(props) {
     if (props.nftBuildSpaceAddress) {
       const updatedBuildSpaceNFTs = buildSpaceNFTs.map(async (l, i) => {
         try {
-           //TODO: Fix CORS related issued and enable this
-        //let tokenURI = await BuildSpaceContract.tokenURI(i);
-        let tokenURI = await l.tokenURI;
+          //TODO: Fix CORS related issued and enable this
+          //let tokenURI = await BuildSpaceContract.tokenURI(i);
+          let tokenURI = await l.tokenURI;
 
-        tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+          tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-        const metadata = await fetch(tokenURI);
-        const metadataJSON = await metadata.json();
+          const metadata = await fetch(tokenURI);
+          const metadataJSON = await metadata.json();
 
-        let image = await metadataJSON.image;
-        image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
+          let image = await metadataJSON.image;
+          image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-        // Replace the tokenURI with the updated image url
-        l.tokenURI = await image;
-
+          // Replace the tokenURI with the updated image url
+          l.tokenURI = await image;
         } catch (error) {
           console.error(error);
         }
-       
       });
       setBuildspaceNFTs(updatedBuildSpaceNFTs);
-     
     }
   }
 
@@ -124,22 +121,26 @@ export default function Listing(props) {
     return router.push("/");
   }
 
- // Load listing and NFT data on page load
- useEffect(() => {
-  if (isConnected && router.query.walletId) {
-      updateLearnWeb3NFTsTokenURI();
-  } else {
-    goHome();
-  }
-}, [isConnected], router);
-
-  useEffect(() => {
-    if (isConnected && router.query.walletId) {
-      updateBuildSpaceNFTsTokenURI();
-    } else {
-      goHome();
-    }
-  }, [isConnected, router]);
+  // Load listing and NFT data on page load
+  useEffect(
+    () => {
+      // Check  if data received from the profile if still in pending state
+      if (props.learnWeb3 && props.buildSpace ) {
+        setBuildspaceNFTs(props.buildSpace);
+        setLearnWeb3NFTs(props.learnWeb3);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+      if (router.query.walletId  && provider && isConnected) {
+        Promise.all([updateBuildSpaceNFTsTokenURI(), updateLearnWeb3NFTsTokenURI()]).finally(() =>
+          setLoading(false)
+        );
+      } else {
+        goHome();
+      }
+    }, [learnWeb3NFTs,  buildSpaceNFTs ]
+  );
 
   /*
     // Load listing and NFT data on page load

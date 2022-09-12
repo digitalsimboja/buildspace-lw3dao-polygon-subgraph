@@ -58,9 +58,8 @@ export default function ProofOfKnowledgeDetails() {
   }
 
   if (!loading && !error && data) {
-    const extractedSkillNFTs = data.users[0]['skillNFTs'];
+    const extractedSkillNFTs = data.users[0]["skillNFTs"];
 
-    
     let buildspaceNFTs = extractedSkillNFTs.filter(
       (l) => l.organization === "buildspace"
     );
@@ -69,9 +68,6 @@ export default function ProofOfKnowledgeDetails() {
       (l) => l.organization === "LearnWeb3GraduatesNFT"
     );
 
-    console.log('extractedSkillNFTs', extractedSkillNFTs)
-    console.log("SUBGRAPH learnWeb3NFTs DATA, ", learnWeb3NFTs);
-    console.log("SUBGRAPH buildspaceNFTs DATA, ", buildspaceNFTs);
 
     return (
       <>
@@ -124,27 +120,15 @@ export default function ProofOfKnowledgeDetails() {
           </Grid>
           <Divider mt={12} mb={12} />
           {/* Display the listing of NFT skills */}
-          <Listing  
-          nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
-          nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
-          learnWeb3={learnWeb3NFTs}
-          buildSpace={buildspaceNFTs}
-
+          <Listing
+            nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
+            nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
+            learnWeb3={learnWeb3NFTs}
+            buildSpace={buildspaceNFTs}
           />
-
         </Box>
       </>
     );
   }
 }
 
-/*
-  async function goHome() {
-    return router.push("/");
-  }
-  useEffect(() => {
-    if (!isConnected && !router.query.walletId) {
-      goHome();
-    }
-  }, [isConnected, router])
-*/
