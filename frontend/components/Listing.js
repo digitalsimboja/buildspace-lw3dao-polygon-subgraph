@@ -115,49 +115,50 @@ export default function Listing(props) {
       }
     }, [router, provider]);
 
-  return (
-    <Box as={Container} maxW="5xl" mt={14} p={4}>
-      <Box>
-        <Text>LearnWeb3 Graduate Experience</Text>
-      </Box>
-      {loading && props.nftLearnWeb3Address ? (
-        <Box>Loading...</Box>
-      ) : (
-        <Flex gap={"1rem"} overflowX={"auto"} width={"100%"}>
-          <SimpleGrid
-            columns={[6, null]}
-            spacing="20px"
-            boxShadow={"2xl"}
-            ml={2}
-          >
-            {/*Insert learnweb3 here before cors here */}
-            {learnWeb3NFTs.map((l, i) => {
-              <Box key={i}>{
-                <Image src={l.tokenURI} />
-              }</Box>
+    return (
+      <Box as={Container} maxW="5xl" mt={14} p={4}>
+        <Box>
+          <Text>LearnWeb3 Graduate Experience</Text>
+        </Box>
+        {loading ? (
+          <SimpleGrid columns={[6, null]} spacing="20px">
+            {learnWeb3NFTs.map((skill, i) => {
+              <Flex key={i} flexDir={"column"}>
+                <Image src={""} alt="Loading..." />
+              </Flex>;
             })}
           </SimpleGrid>
-        </Flex>
-      )}
-
-      <Divider mt={12} mb={12} />
-      <Box>
-        <Text>Buildspace Proof of knowledge</Text>
-      </Box>
-      {loading && props.nftBuildSpaceAddress ? (
-        <Box>Loading... </Box>
-      ) : (
-        <Flex gap={"1rem"} overflowX={"auto"} width={"100%"}>
-          <SimpleGrid
-            columns={[6, null]}
-            spacing="20px"
-            boxShadow={"2xl"}
-            ml={2}
-          >
-            {/*Insert Buildspace before cors here */}
+        ) : (
+          <SimpleGrid columns={[6, null]} spacing="20px">
+            {learnWeb3NFTs.map((skill, i) => {
+              <Flex key={i} flexDir={"column"}>
+                <Image src={skill.image} />
+              </Flex>;
+            })}
           </SimpleGrid>
-        </Flex>
-      )}
-    </Box>
-  );
+        )}
+  
+        <Divider mt={12} mb={12} />
+        <Box>
+          <Text>Buildspace Proof of knowledge</Text>
+        </Box>
+        {loading ? (
+          <SimpleGrid columns={[6, null]} spacing="20px">
+            {buildSpaceNFTs.map((skill, i) => {
+              <Flex key={i} flexDir={"column"}>
+                <Image src={""} alt="Loading..." />
+              </Flex>;
+            })}
+          </SimpleGrid>
+        ) : (
+          <SimpleGrid columns={[6, null]} spacing="20px">
+            {buildSpaceNFTs.map((skill, i) => {
+              <Flex key={i} flexDir={"column"}>
+                <Image src={skill.image} />
+              </Flex>;
+            })}
+          </SimpleGrid>
+        )}
+      </Box>
+    );
 }
