@@ -18,6 +18,7 @@ import { Contract } from "ethers";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { createClient } from "urql";
+import { useQuery, gql } from "@apollo/client";
 import { erc721ABI, useAccount, useContract, useProvider } from "wagmi";
 import useSwr from "swr";
 import Navbar from "../../components/Navbar";
@@ -27,109 +28,69 @@ import {
   BUILDSPACE_ADDRESS,
   LEARNWEB3DAOGRADUATENFT_ADDRESS,
 } from "../../constants";
-import { SKILLNFTS } from "../../data";
 
-const fetcher = (query) =>
-  fetch("/api/profiles[walletId]", {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json",
-    },
-    body: JSON.stringify({ query }),
-  })
-    .then((res) => res.json())
-    .then((json) => json.data);
+// The GraphQL query to run
+const profilesQuery = gql`
+  query fetchUserSkillsNftsEnitites {
+    users(where: { id: "0x083fe503ea4e6319bf5fd710316124a36e13bda9" }) {
+      id
+      skillNFTs {
+        id
+        organization
+        tokenURI
+        tokenId
+      }
+    }
+  }
+`;
 
 export default function ProofOfKnowledgeDetails() {
-  // Extract the user wallet address from the URL
+  // state variables to manage loading
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const walletId = router.query.walletId;
+  const { isConnected } = useAccount();
 
-  // state variables to contain the userSkillsNfts
+  // state variable to setData
   const [buildspaceNFTs, setBuildspaceNFTs] = useState([]);
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
 
-  // State variables to contain loading state
-  const [loading, setLoading] = useState(true);
+  const { loading, data, error } = useQuery(profilesQuery);
 
-  const { isConnected } = useAccount();
-
-  // Get the connected address
-  const { address } = useAccount();
-
-  // Function to fetch userSkillsNfts and set the user's skills
-  async function fetchUserSkillsNfts() {
-    if (isConnected && address ) {
-      setLoading(true);
-      
-      // Create a urql client
-      const urqlClient = createClient({
-        url: SUBGRAPH_URL,
-      });
-
-      // The GraphQL query to run
-      const userSkillsNftsQuery = `query fetchUserSkillsNftsEnitites {
-        users (where: {id: "0x083fe503ea4e6319bf5fd710316124a36e13bda9"})  {
-          id
-          skillNFTs {
-            id
-            organization
-            tokenURI
-            tokenId
-          }
-        }
-      }`;
-
-       // We want to avoid sending two queries to the subgraph, so we fetch all user's skillNFTs and filter at the frontend
-      /*
-      let org1 = "buildspace";
-      let org2 = "learnweb3";
-
-      const userSkillsNftsQuery = `query fetchUserSkillsNftsEnitites {
-        users (where: {id: "${walletId}"}) {
-          skillsNft(where: {organization.toLowerCase(): org1}) { #we might repeat same for org2
-            id
-            organization
-            tokenURI
-            tokenId
-          }
-        }
-      }`;
-      */
-
-      // Send the query to the subgraph GraphQL API, and get the response
-      //TODO: Fix cors related issues
-      //const response = await urqlClient.query(userSkillsNftsQuery).toPromise();
-      const response = SKILLNFTS;
-
-      const userSkillsNftsEntities = response;
-    
-      // Update the state variables
-      // TODO: filter by organization
-      let buildSpaceNFTsPOK = userSkillsNftsEntities.filter(
-        (l) => l.organization === "buildspace"
-      );
-      let learnWeb3GraduateNFTs = userSkillsNftsEntities.filter(
-        (l) => l.organization === "LearnWeb3GraduatesNFT"
-      );
-
-      setBuildspaceNFTs(buildSpaceNFTsPOK);
-      setLearnWeb3NFTs(learnWeb3GraduateNFTs);
-    }
+  
+  if (error) {
+    console.error(error)
   }
 
+  if (!loading && !error && data ) {
+    
+    const extractedSkillNFTs = data.users;
+    console.log("SUBGRAPH DATA, ", extractedSkillNFTs);
+
+    let buildSpaceNFTsPOK = extractedSkillNFTs.filter(
+      (l) => l.organization === "buildspace"
+    );
+
+    let learnWeb3GraduateNFTs = extractedSkillNFTs.filter(
+      (l) => l.organization === "LearnWeb3GraduatesNFT"
+    );
+
+    // Update the state variables
+    setBuildspaceNFTs(buildSpaceNFTsPOK);
+    setLearnWeb3NFTs(learnWeb3GraduateNFTs);
+
+
+  }
+/*
   async function goHome() {
     return router.push("/");
   }
-
   useEffect(() => {
-    if (isConnected && router.query.walletId) {
-      fetchUserSkillsNfts();
-      setLoading(false);
-    } else {
+    if (!isConnected && !router.query.walletId) {
       goHome();
     }
-  }, [router, isConnected]);
+  }, [isConnected, router])
+*/
 
   return (
     <>
@@ -183,14 +144,19 @@ export default function ProofOfKnowledgeDetails() {
         <Divider mt={12} mb={12} />
 
         {/* Show the listing of the proof of knowledge */}
-        {loading ? (<span>Loading...</span>) : (<Listing
-          nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
-          nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
-          learnWeb3={learnWeb3NFTs}
-          buildSpace={buildspaceNFTs}
-        />)}
-        
+        {loading ? (
+          <span>Loading...</span>
+        ) : (
+          <Listing
+            nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
+            nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
+            learnWeb3={learnWeb3NFTs}
+            buildSpace={buildspaceNFTs}
+          />
+        )}
       </Box>
     </>
   );
+
+  
 }

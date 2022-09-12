@@ -58,7 +58,7 @@ export default function Listing(props) {
   });
 
   // Function to update NFT details from the contract
-  async function updatelearnWeb3NFTsTokenURI() {
+  async function updateLearnWeb3NFTsTokenURI() {
     // map through the POKNfts and update the image fields
     if (props.nftLearnWeb3Address) {
       const updatedLearnWeb3NFTs = learnWeb3NFTs.map(async (l, i) => {
@@ -90,7 +90,7 @@ export default function Listing(props) {
   }
 
   // Function to update NFT details from the contract
-  async function updatebuildSpaceNFTsTokenURI() {
+  async function updateBuildSpaceNFTsTokenURI() {
     // map through the POKNfts and update the image fields
     if (props.nftBuildSpaceAddress) {
       const updatedBuildSpaceNFTs = buildSpaceNFTs.map(async (l, i) => {
@@ -127,7 +127,7 @@ export default function Listing(props) {
  // Load listing and NFT data on page load
  useEffect(() => {
   if (isConnected && router.query.walletId) {
-      updatelearnWeb3NFTsTokenURI();
+      updateLearnWeb3NFTsTokenURI();
   } else {
     goHome();
   }
@@ -135,11 +135,23 @@ export default function Listing(props) {
 
   useEffect(() => {
     if (isConnected && router.query.walletId) {
-      updatebuildSpaceNFTsTokenURI();
+      updateBuildSpaceNFTsTokenURI();
     } else {
       goHome();
     }
   }, [isConnected, router]);
+
+  /*
+    // Load listing and NFT data on page load
+    useEffect(() => {
+      if (router.query.walletId  && provider && isConnected) {
+        Promise.all([updateBuildSpaceNFTsTokenURI(), updateLearnWeb3NFTsTokenURI()]).finally(() =>
+          setLoading(false)
+        );
+      }
+    }, [router, provider]);
+
+    */
 
   return (
     <Box as={Container} maxW="5xl" mt={14} p={4}>

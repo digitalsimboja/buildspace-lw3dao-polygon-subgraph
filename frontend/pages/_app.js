@@ -1,10 +1,16 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import "@rainbow-me/rainbowkit/styles.css";
 import "../styles/globals.css";
-
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  gql,
+} from "@apollo/client";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { SUBGRAPH_URL } from "../constants";
 
 const polygonChain = {
   id: 137,
@@ -50,13 +56,20 @@ const wagmiClient = createClient({
   provider,
 });
 
+const appolloClient = new ApolloClient({
+  uri: SUBGRAPH_URL,
+  cache: new InMemoryCache(),
+});
+
 function MyApp({ Component, pageProps }) {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
+      <ApolloProvider client={appolloClient}>
         <ChakraProvider>
           <Component {...pageProps} />
         </ChakraProvider>
+        </ApolloProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );
