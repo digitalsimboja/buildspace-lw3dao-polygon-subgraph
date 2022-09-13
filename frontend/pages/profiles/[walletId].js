@@ -7,6 +7,7 @@ import {
   Progress,
   GridItem,
   Stack,
+  Divider,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
@@ -62,7 +63,7 @@ async function updateTokenURI(nftContract) {
   }
 }
 
-const DisplayBLDSpaceNFT = ( { organization, tokenURI }) => {
+const DisplayBLDSpaceNFT = ({ organization, tokenURI }) => {
   if (organization === "buildspace") {
     return (
       <GridItem>
@@ -73,8 +74,7 @@ const DisplayBLDSpaceNFT = ( { organization, tokenURI }) => {
       </GridItem>
     );
   }
-
-}
+};
 
 const DisplayLearnWeb3NFT = ({ organization, tokenURI }) => {
   /*
@@ -121,16 +121,14 @@ const BuildSpaceContract = useContract({
     
   }
   */
-  if (organization === "buildspace") {
-    return (
-      <GridItem>
-        <chakra.h3 fontSize="xl" fontWeight="600">
-          {organization}
-        </chakra.h3>
-        <chakra.p>{tokenURI}</chakra.p>
-      </GridItem>
-    );
-  }
+  return (
+    <GridItem>
+      <chakra.h3 fontSize="xl" fontWeight="600">
+        {organization}
+      </chakra.h3>
+      <chakra.p>{tokenURI}</chakra.p>
+    </GridItem>
+  );
 };
 
 // The GraphQL query to run
@@ -190,25 +188,30 @@ export default function ProofOfKnowledgeDetails() {
               {data &&
                 data.users[0]["skillNFTs"].map(
                   (fetchUserSkillsNftsEnitites, i) => {
-                    return fetchUserSkillsNftsEnitites.organization ===
-                      "LearnWeb3GraduatesNFT" ? (
-                      <DisplayLearnWeb3NFT
-                        key={i}
-                        organization={fetchUserSkillsNftsEnitites.organization}
-                        tokenURI={fetchUserSkillsNftsEnitites.tokenURI}
-                      />
-                    ) : (
-                      fetchUserSkillsNftsEnitites.organization ===
-                        "buildspace" && (
-                        <DisplayBLDSpaceNFT
-                          key={i}
-                          organization={
-                            fetchUserSkillsNftsEnitites.organization
-                          }
-                          tokenURI={fetchUserSkillsNftsEnitites.tokenURI}
-                        />
-                      )
-                    );
+                   { if (fetchUserSkillsNftsEnitites.organization ===  "LearnWeb3GraduatesNFT") {
+                    return <DisplayLearnWeb3NFT key={i} organization={fetchUserSkillsNftsEnitites.organization}
+                    tokenURI={fetchUserSkillsNftsEnitites.tokenURI}  />
+                   }}
+                  }
+                )}
+            </Grid>
+            <Divider />
+
+            <Grid
+              templateColumns={{
+                base: "repeat(1, 1fr)",
+                sm: "repeat(2, 1fr)",
+                md: "repeat(4, 1fr)",
+              }}
+              gap={{ base: "8", sm: "12", md: "16" }}
+            >
+              {data &&
+                data.users[0]["skillNFTs"].map(
+                  (fetchUserSkillsNftsEnitites, i) => {
+                    {if (fetchUserSkillsNftsEnitites.organization === "buildspace") {
+                      return <DisplayBLDSpaceNFT key={i} organization={fetchUserSkillsNftsEnitites.organization}
+                      tokenURI={fetchUserSkillsNftsEnitites.tokenURI} />
+                    }}
                   }
                 )}
             </Grid>
@@ -217,19 +220,4 @@ export default function ProofOfKnowledgeDetails() {
       </Box>
     </>
   );
-}
-// handle the image uri
-//build a grid with it
-
-{
-  /*
-            <Listing
-            key={i}
-            id={fetchUserSkillsNftsEnitites.id}
-            organization={fetchUserSkillsNftsEnitites.organization}
-            tokenURI={fetchUserSkillsNftsEnitites.tokenURI}
-            nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
-            nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
-          />
-*/
 }
