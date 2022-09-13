@@ -11,7 +11,7 @@ import {
   createIcon,
 } from '@chakra-ui/react';
 
-export default function CallToActionWithAnnotation() {
+export default function Hero() {
   return (
     <>
      
