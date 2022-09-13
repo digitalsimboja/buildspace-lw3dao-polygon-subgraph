@@ -1,21 +1,12 @@
 import {
   Box,
-  VStack,
-  Button,
-  Image,
   Flex,
   Divider,
-  Heading,
   SimpleGrid,
-  chakra,
-  Grid,
   Text,
-  GridItem,
   Container,
-  Stack,
-  useColorModeValue,
-  Spinner,
   Progress,
+  Grid,
 } from "@chakra-ui/react";
 import {} from "@chakra-ui/react";
 import Router, { useRouter } from "next/router";
@@ -35,13 +26,23 @@ export default function Listing({
   nftLearnWeb3Address,
   nftBuildSpaceAddress,
 }) {
+  // state variables to hold the NFT images
+  const [imageURI, setImageURI] = useState([...tokenURI, imageURI]);
+  const [org, setOrg] = useState([...organization, org]);
+
+  console.log("TOKENURI: ", imageURI)
+  console.log("organization: ", org)
+
+ return (
+ <Grid></Grid>
+ )
+
+
   // Extract the user wallet address from the URL
   const router = useRouter();
   const walletId = router.query.walletId;
 
-  // state variables to hold the NFT images
-  const [bldSpaceImages, setBldSpaceImages] = useState([]);
-  const [learnWeb3Images, setLearnWeb3Images] = useState([]);
+  
 
   // Loading state
   const [loading, setLoading] = useState(true);
@@ -95,7 +96,9 @@ export default function Listing({
     try {
       if (organization === "buildspace") {
         // Get token URI from contract
+        
         let tokenURI = await BuildSpaceContract.tokenURI(0);
+        console.log('tokenURI: ', tokenURI)
 
         // If it's an IPFS URI, replace it with an HTTP Gateway link
         tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
@@ -122,29 +125,26 @@ export default function Listing({
   // Load listing and NFT data on page load
   // Update the tokenURI when component is loaded
   useEffect(() => {
-    {
-      /* use Promise.all */
+    if (organization === "buildspace") {
+      fetchLearnBldSpaceNFT();
+
     }
-    if (router.query.walletId && provider) {
-      Promise.all([fetchLearnWeb3NFT(), fetchLearnBldSpaceNFT()]).finally(
-        () => {
-          setLoading(false);
-        }
-      );
+    if (organization === "LearnWeb3GraduatesNFT") {
+      fetchLearnBldSpaceNFT();
     }
+    setLoading(false);
     // if User disconnects, goHome()
     if (!isConnected || !provider) {
       goHome();
     }
-  }, [organization, provider]);
+  }, []);
 
   const isImage = [".gif", ".jpg", ".jpeg", ".png"]; //you can add more
   const isVideo = [".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mp4"];
 
-  console.log({
-    learnWeb3Images: learnWeb3Images,
-    bldSpaceImages: bldSpaceImages,
-  });
+  //console.log("learnweb3:", learnWeb3Images)
+  //console.log("bldSpaceImages:", bldSpaceImages)
+
 
   return (
     <Box as={Container} maxW="5xl" mt={14} p={4}>
