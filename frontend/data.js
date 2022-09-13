@@ -1,9 +1,5 @@
-{
-   "data":{
-      "users":[
-         {
-            "id":"0x083fe503ea4e6319bf5fd710316124a36e13bda9",
-            "skillNFTs":[
+
+            [
                {
                   "id":"0x703b6a4ae5beeb85c8e56b1cfbe5ed1ad4297e8a81f3273eee57e2bac547257c242",
                   "organization":"buildspace",
@@ -25,9 +21,4 @@
                   "tokenId":"16727",
                   "__typename":"SkillsNft"
                }
-            ],
-            "__typename":"User"
-         }
-      ]
-   }
-}
+            ]
