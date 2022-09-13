@@ -14,9 +14,9 @@ import {
   Container,
   Stack,
   useColorModeValue,
+  Spinner,
 } from "@chakra-ui/react";
 import {} from "@chakra-ui/react";
-import { TokenKind } from "graphql";
 import Router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -37,12 +37,12 @@ export default function Listing(props) {
   const [learnWeb3Images, setLearnWeb3Images] = useState([]);
 
   // loading state
-  const [loading, setLoading] = useState(true);
+  const [learnWeb3Loading, setLearnWeb3Loading] = useState(true);
+  const [buildSpaceLoading, setBuildSpaceLoading] = useState(true);
 
-  // Get the signer, connected address and a contract instance
+  // Get the provider, connected address and a contract instance
   // for the NFT contract using wagmi
   const provider = useProvider();
-  const { address } = useAccount();
   const { isConnected } = useAccount();
 
   // The contract instance for both Buildspace and Learnweb3
@@ -69,11 +69,13 @@ export default function Listing(props) {
     return bld;
   };
 
-  // Function to update NFT details from the contract
+  // Function to update LearnWeb3DAO NFT details from the contract
   async function updateLearnWeb3NFTsTokenURI() {
     // map through the POKNfts and update the image fields
     const learnWeb3NFTs = await updateLearnWeb3State();
-    if (props.nftLearnWeb3Address && learnWeb3NFTs) {
+
+    console.log("learnWeb3NFTs", learnWeb3NFTs);
+    if (props.nftLearnWeb3Address && learnWeb3NFTs !== undefined) {
       learnWeb3NFTs.map(async (l, i) => {
         try {
           // Get token URI from contract
@@ -91,20 +93,20 @@ export default function Listing(props) {
           image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
           setLearnWeb3Images((learnWeb3Images) => [...learnWeb3Images, image]);
-          setLoading(false);
         } catch (error) {
           console.error(error);
-          setLoading(false);
         }
       });
     }
   }
 
-  // Function to update NFT details from the contract
+  // Function to update Buildspace NFT details from the contract
   async function updateBuildSpaceNFTsTokenURI() {
     // map through the POKNfts and update the image fields
     const buildSpaceNFTs = await updateBuildSpaceState();
-    if (props.nftBuildSpaceAddress && buildSpaceNFTs) {
+
+    console.log("buildSpaceNFTs", buildSpaceNFTs);
+    if (props.nftBuildSpaceAddress && buildSpaceNFTs !== undefined) {
       buildSpaceNFTs.map(async (l, i) => {
         try {
           // Get token URI from contract
@@ -132,21 +134,43 @@ export default function Listing(props) {
     }
   }
 
-  async function goHome() {
+  console.log("learnWeb3Images", props.learnWeb3);
+  console.log("bldSpaceImages", props.buildSpace);
+
+  const goHome = async () => {
     return router.push("/");
-  }
+  };
 
   // Load listing and NFT data on page load
-  // Fetch the NFT details when component is loaded
+  // Update the tokenURI when component is loaded
   useEffect(() => {
-    
+    // if query from subgraph is in loading state or we received an empty object
+    if (Object.keys(props.learnWeb3).length === 0) {
+      setBldSpaceImages(...bldSpaceImages, []);
+      setLearnWeb3Loading(true);
+    }
+    if (Object.keys(props.buildSpace).length === 0) {
+      setBldSpaceImages(...bldSpaceImages, []);
+      setBuildSpaceLoading(true);
+    }
+
+    // Update NFT is ready
+    if (Object.keys(props.learnWeb3).length !== 0) {
       updateLearnWeb3NFTsTokenURI();
+      setLearnWeb3Loading(false);
+    }
+    if (Object.keys(props.buildSpace).length !== 0) {
       updateBuildSpaceNFTsTokenURI();
-  
+      setBuildSpaceLoading(false);
+    }
+    // if User disconnects, goHome()
+    if (!isConnected || !provider) {
+      goHome();
+    }
   }, []);
 
-  const isImage = ['.gif','.jpg','.jpeg','.png']; //you can add more
- const   isVideo =['.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.mp4']
+  const isImage = [".gif", ".jpg", ".jpeg", ".png"]; //you can add more
+  const isVideo = [".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mp4"];
 
   return (
     <Box as={Container} maxW="5xl" mt={14} p={4}>
@@ -155,64 +179,127 @@ export default function Listing(props) {
       </Box>
       <Flex gap={"1rem"}>
         <SimpleGrid columns={[6, null]} spacing="20px">
-          {learnWeb3Images.map((nft, i) => (
-            <Flex
-              key={i}
-              flexDir={"column"}
-              bgColor="gray"
-              p={"2rem"}
-              gap="1rem"
-              color={"#fff"}
-              justify="space-between"
-            >
-              {isImage?.includes(nft) ? (
-                <img src={nft} />
-              ) : (
-                <Box
-                  as="iframe"
-                  src={nft}
-                  width="100%"
-                  sx={{
-                    aspectRatio: "16/9",
-                  }}
-                />
-              )}
-            </Flex>
-          ))}
+          {/* check if LeaarWeb3 Images and or videos are in Loading state, else display the images */}
+          {!learnWeb3Loading
+            ? learnWeb3Images.map((nft, i) => (
+                <Flex
+                  key={i}
+                  rounded="2xl"
+                  flexDir={"column"}
+                  bgColor="gray"
+                  p={"2rem"}
+                  gap="1rem"
+                  color={"#fff"}
+                  justify="space-between"
+                >
+                  {isImage?.includes(nft) ? (
+                    <img src={nft} />
+                  ) : (
+                    <Box
+                      rounded="2xl"
+                      as="iframe"
+                      src={nft}
+                      width="100%"
+                      sx={{
+                        aspectRatio: "16/9",
+                      }}
+                    />
+                  )}
+                </Flex>
+              ))
+            : learnWeb3Images.map((nft, i) => (
+                <Flex
+                  key={i}
+                  rounded="2xl"
+                  flexDir={"column"}
+                  bgColor="gray"
+                  p={"2rem"}
+                  gap="1rem"
+                  color={"#fff"}
+                  justify="space-between"
+                >
+                  {/* Render video if not image loading state */}
+                  {isImage?.includes(nft) ? (
+                    <img src={<Spinner />} alt="" />
+                  ) : (
+                    <Box
+                      rounded="2xl"
+                      as="iframe"
+                      src={<Spinner />}
+                      width="100%"
+                      sx={{
+                        aspectRatio: "16/9",
+                      }}
+                    />
+                  )}
+                </Flex>
+              ))}
         </SimpleGrid>
       </Flex>
 
       <Divider mt={12} mb={12} />
+
       <Box>
         <Text>Buildspace Proof of knowledge</Text>
       </Box>
       <Flex gap={"1rem"}>
         <SimpleGrid columns={[6, null]} spacing="20px">
-          {bldSpaceImages.map((nft, i) => (
-            <Flex
-              key={i}
-              flexDir={"column"}
-              bgColor="gray"
-              p={"2rem"}
-              gap="1rem"
-              color={"#fff"}
-              justify="space-between"
-            >
-              {/* Render video if not image */}
-              {isImage?.includes(nft) ? (
-                <img src={nft} />
-              ) :  (
-                <Box
-                  as="iframe"
-                  src={nft}
-                  width="100%"
-                  sx={{
-                    aspectRatio: "16/9",
-                  }}
-                />
-              )}
-            </Flex>
-          ))}
+          {/* check if BuildSpace images and or videos are in Loading state, else display the images */}
+          {!buildSpaceLoading
+            ? bldSpaceImages.map((nft, i) => (
+                <Flex
+                  key={i}
+                  rounded="2xl"
+                  flexDir={"column"}
+                  bgColor="gray"
+                  p={"2rem"}
+                  gap="1rem"
+                  color={"#fff"}
+                  justify="space-between"
+                >
+                  {/* Render video if not image */}
+                  {isImage?.includes(nft) ? (
+                    <img src={nft} />
+                  ) : (
+                    <Box
+                      as="iframe"
+                      src={nft}
+                      width="100%"
+                      rounded="2xl"
+                      sx={{
+                        aspectRatio: "16/9",
+                      }}
+                    />
+                  )}
+                </Flex>
+              ))
+            : bldSpaceImages.map((nft, i) => (
+                <Flex
+                  key={i}
+                  rounded="2xl"
+                  flexDir={"column"}
+                  bgColor="gray"
+                  p={"2rem"}
+                  gap="1rem"
+                  color={"#fff"}
+                  justify="space-between"
+                >
+                  {/* Render video if not image loading state */}
+                  {isImage?.includes(nft) ? (
+                    <img src={<Spinner />} alt="" />
+                  ) : (
+                    <Box
+                      rounded="2xl"
+                      as="iframe"
+                      src={<Spinner />}
+                      width="100%"
+                      sx={{
+                        aspectRatio: "16/9",
+                      }}
+                    />
+                  )}
+                </Flex>
+              ))}
         </SimpleGrid>
       </Flex>
     </Box>
