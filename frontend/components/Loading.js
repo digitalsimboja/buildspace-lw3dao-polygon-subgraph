@@ -9,22 +9,13 @@ import {
     Image,
     Grid,
     GridItem,
+    Progress,
     VStack,
     Container,
   } from "@chakra-ui/react";
   import Navbar from "./Navbar";
-  import Listing from "./Listing";
-  
-  import {
-    BUILDSPACE_ADDRESS,
-    LEARNWEB3DAOGRADUATENFT_ADDRESS,
-  } from "../constants";
 
   export default function Loading() {
-
-    console.log('isLoading...', 'isLoading')
-    // If the NFT Data is not ready, handle loading state
-      
     return (
         <>
           <Navbar />
@@ -75,12 +66,7 @@ import {
             </Grid>
             <Divider mt={12} mb={12} />
             {/* Display the listing  loading state of NFT skills */}
-            <Listing
-              nftLearnWeb3Address={{}}
-              nftBuildSpaceAddress={{}}
-              learnWeb3={{}}
-              buildSpace={{}}
-            />
+            <Progress hasStripe value={64} />
           </Box>
         </>
       );

@@ -127,16 +127,14 @@ export default function ProofOfKnowledgeDetails() {
               </GridItem>
             </Grid>
             <Divider mt={12} mb={12} />
-
             <Listing
               key={i}
               id={fetchUserSkillsNftsEnitites.id}
               organization={fetchUserSkillsNftsEnitites.organization}
               tokenURI={fetchUserSkillsNftsEnitites.tokenURI}
-              tokenId={fetchUserSkillsNftsEnitites.tokenId}
               nftLearnWeb3Address={LEARNWEB3DAOGRADUATENFT_ADDRESS}
               nftBuildSpaceAddress={BUILDSPACE_ADDRESS}
-            />
+            />            
           </Box>
         ))
       )}

@@ -15,6 +15,7 @@ import {
   Stack,
   useColorModeValue,
   Spinner,
+  Progress,
 } from "@chakra-ui/react";
 import {} from "@chakra-ui/react";
 import Router, { useRouter } from "next/router";
@@ -27,7 +28,13 @@ import {
   useSigner,
 } from "wagmi";
 
-export default function Listing(props) {
+export default function Listing({
+  id,
+  organization,
+  tokenURI,
+  nftLearnWeb3Address,
+  nftBuildSpaceAddress,
+}) {
   // Extract the user wallet address from the URL
   const router = useRouter();
   const walletId = router.query.walletId;
@@ -36,106 +43,77 @@ export default function Listing(props) {
   const [bldSpaceImages, setBldSpaceImages] = useState([]);
   const [learnWeb3Images, setLearnWeb3Images] = useState([]);
 
-  // loading state
-  const [learnWeb3Loading, setLearnWeb3Loading] = useState(true);
-  const [buildSpaceLoading, setBuildSpaceLoading] = useState(true);
+  // Loading state
+  const [loading, setLoading] = useState(true);
 
   // Get the provider, connected address and a contract instance
   // for the NFT contract using wagmi
   const provider = useProvider();
+  const { address } = useAccount();
   const { isConnected } = useAccount();
 
   // The contract instance for both Buildspace and Learnweb3
   const LearnWeb3Contract = useContract({
-    addressOrName: props.nftLearnWeb3Address,
+    addressOrName: nftLearnWeb3Address,
     contractInterface: erc721ABI,
     signerOrProvider: provider,
   });
 
   const BuildSpaceContract = useContract({
-    addressOrName: props.nftBuildSpaceAddress,
+    addressOrName: nftBuildSpaceAddress,
     contractInterface: erc721ABI,
     signerOrProvider: provider,
   });
 
-  // function to await props values
-  const updateLearnWeb3State = async () => {
-    const lWeb3 = await props.learnWeb3;
-    return lWeb3;
-  };
+  // Fetch NFT details from the contract
+  async function fetchLearnWeb3NFT() {
+    try {
+      if (organization === "LearnWeb3GraduatesNFT") {
+        // Get token URI from contract
+        let tokenURI = await LearnWeb3Contract.tokenURI(0);
 
-  const updateBuildSpaceState = async () => {
-    const bld = await props.buildSpace;
-    return bld;
-  };
+        // If it's an IPFS URI, replace it with an HTTP Gateway link
+        tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-  // Function to update LearnWeb3DAO NFT details from the contract
-  async function updateLearnWeb3NFTsTokenURI() {
-    // map through the POKNfts and update the image fields
-    const learnWeb3NFTs = await updateLearnWeb3State();
+        // Resolve the Token URI
+        const metadata = await fetch(tokenURI);
+        const metadataJSON = await metadata.json();
 
-    console.log("learnWeb3NFTs", learnWeb3NFTs);
-    if (props.nftLearnWeb3Address && learnWeb3NFTs !== undefined) {
-      learnWeb3NFTs.map(async (l, i) => {
-        try {
-          // Get token URI from contract
-          let tokenURI = await LearnWeb3Contract.tokenURI(i);
+        // Extract image URI from the metadata
+        let image = await metadataJSON.image;
+        image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-          // If it's an IPFS URI, replace it with an HTTP Gateway link
-          tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-
-          // Resolve the Token URI
-          const metadata = await fetch(tokenURI);
-          const metadataJSON = await metadata.json();
-
-          // Extract image URI from the metadata
-          let image = await metadataJSON.image;
-          image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
-
-          setLearnWeb3Images((learnWeb3Images) => [...learnWeb3Images, image]);
-        } catch (error) {
-          console.error(error);
-        }
-      });
+        setLearnWeb3Images((learnWeb3Images) => [...learnWeb3Images, image]);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  // Function to update Buildspace NFT details from the contract
-  async function updateBuildSpaceNFTsTokenURI() {
-    // map through the POKNfts and update the image fields
-    const buildSpaceNFTs = await updateBuildSpaceState();
+  // Fetch NFT details from the contract
+  async function fetchLearnBldSpaceNFT() {
+    try {
+      if (organization === "buildspace") {
+        // Get token URI from contract
+        let tokenURI = await BuildSpaceContract.tokenURI(0);
 
-    console.log("buildSpaceNFTs", buildSpaceNFTs);
-    if (props.nftBuildSpaceAddress && buildSpaceNFTs !== undefined) {
-      buildSpaceNFTs.map(async (l, i) => {
-        try {
-          // Get token URI from contract
-          let tokenURI = await BuildSpaceContract.tokenURI(i);
+        // If it's an IPFS URI, replace it with an HTTP Gateway link
+        tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-          // If it's an IPFS URI, replace it with an HTTP Gateway link
-          tokenURI = await tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+        // Resolve the Token URI
+        const metadata = await fetch(tokenURI);
+        const metadataJSON = await metadata.json();
 
-          // Resolve the Token URI
-          const metadata = await fetch(tokenURI);
-          const metadataJSON = await metadata.json();
+        // Extract image URI from the metadata
+        let image = await metadataJSON.image;
+        image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-          // Extract image URI from the metadata
-          let image = await metadataJSON.image;
-          image = await image.replace("ipfs://", "https://ipfs.io/ipfs/");
-
-          /// Update state variables
-          setBldSpaceImages((bldSpaceImages) => [...bldSpaceImages, image]);
-          setLoading(false);
-        } catch (error) {
-          console.error(error);
-          setLoading(false);
-        }
-      });
+        setLearnWeb3Images((bldSpaceImages) => [...bldSpaceImages, image]);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
-
-  console.log("learnWeb3Images", props.learnWeb3);
-  console.log("bldSpaceImages", props.buildSpace);
 
   const goHome = async () => {
     return router.push("/");
@@ -144,96 +122,69 @@ export default function Listing(props) {
   // Load listing and NFT data on page load
   // Update the tokenURI when component is loaded
   useEffect(() => {
-    // if query from subgraph is in loading state or we received an empty object
-    if (Object.keys(props.learnWeb3).length === 0) {
-      setBldSpaceImages(...bldSpaceImages, []);
-      setLearnWeb3Loading(true);
+    {
+      /* use Promise.all */
     }
-    if (Object.keys(props.buildSpace).length === 0) {
-      setBldSpaceImages(...bldSpaceImages, []);
-      setBuildSpaceLoading(true);
-    }
-
-    // Update NFT is ready
-    if (Object.keys(props.learnWeb3).length !== 0) {
-      updateLearnWeb3NFTsTokenURI();
-      setLearnWeb3Loading(false);
-    }
-    if (Object.keys(props.buildSpace).length !== 0) {
-      updateBuildSpaceNFTsTokenURI();
-      setBuildSpaceLoading(false);
+    if (router.query.walletId && provider) {
+      Promise.all([fetchLearnWeb3NFT(), fetchLearnBldSpaceNFT()]).finally(
+        () => {
+          setLoading(false);
+        }
+      );
     }
     // if User disconnects, goHome()
     if (!isConnected || !provider) {
       goHome();
     }
-  }, []);
+  }, [organization, provider]);
 
   const isImage = [".gif", ".jpg", ".jpeg", ".png"]; //you can add more
   const isVideo = [".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mp4"];
+
+  console.log({
+    learnWeb3Images: learnWeb3Images,
+    bldSpaceImages: bldSpaceImages,
+  });
 
   return (
     <Box as={Container} maxW="5xl" mt={14} p={4}>
       <Box>
         <Text>LearnWeb3 Graduate Experience</Text>
       </Box>
+      {/* Insert Learnweb3 NFT here */}
       <Flex gap={"1rem"}>
         <SimpleGrid columns={[6, null]} spacing="20px">
-          {/* check if LeaarWeb3 Images and or videos are in Loading state, else display the images */}
-          {!learnWeb3Loading
-            ? learnWeb3Images.map((nft, i) => (
-                <Flex
-                  key={i}
-                  rounded="2xl"
-                  flexDir={"column"}
-                  bgColor="gray"
-                  p={"2rem"}
-                  gap="1rem"
-                  color={"#fff"}
-                  justify="space-between"
-                >
-                  {isImage?.includes(nft) ? (
-                    <img src={nft} />
-                  ) : (
-                    <Box
-                      rounded="2xl"
-                      as="iframe"
-                      src={nft}
-                      width="100%"
-                      sx={{
-                        aspectRatio: "16/9",
-                      }}
-                    />
-                  )}
-                </Flex>
-              ))
-            : learnWeb3Images.map((nft, i) => (
-                <Flex
-                  key={i}
-                  rounded="2xl"
-                  flexDir={"column"}
-                  bgColor="gray"
-                  p={"2rem"}
-                  gap="1rem"
-                  color={"#fff"}
-                  justify="space-between"
-                >
-                  {/* Render video if not image loading state */}
-                  {isImage?.includes(nft) ? (
-                    <img src={<Spinner />} alt="" />
-                  ) : (
-                    <Box
-                      rounded="2xl"
-                      as="iframe"
-                      src={<Spinner />}
-                      width="100%"
-                      sx={{
-                        aspectRatio: "16/9",
-                      }}
-                    />
-                  )}
-                </Flex>
-              ))}
+          {/* If loading is false, then load LearnWeb3 NFT */}
+          {loading ? (
+            <Progress hasStripe value={64}  />
+          ) :  (learnWeb3Images &&
+            learnWeb3Images.map((nft, i) => {
+              <Flex
+                key={i}
+                rounded="2xl"
+                flexDir={"column"}
+                bgColor="gray"
+                p={"2rem"}
+                gap="1rem"
+                color={"#fff"}
+                justify="space-between"
+              >
+                {/* Check if nft is image(TODO!: We could display image and video separately) */}
+                {isImage?.includes(nft) ? (
+                  <img src={nft} />
+                ) : (
+                  <Box
+                    rounded="2xl"
+                    as="iframe"
+                    src={nft}
+                    width="100%"
+                    sx={{
+                      aspectRatio: "16/9",
+                    }}
+                  />
+                )}
+              </Flex>;
+            }))}
         </SimpleGrid>
       </Flex>
 
@@ -243,64 +194,40 @@ export default function Listing(props) {
         <Text>Buildspace Proof of knowledge</Text>
       </Box>
       <Flex gap={"1rem"}>
-        <SimpleGrid columns={[6, null]} spacing="20px">
-          {/* check if BuildSpace images and or videos are in Loading state, else display the images */}
-          {!buildSpaceLoading
-            ? bldSpaceImages.map((nft, i) => (
-                <Flex
-                  key={i}
-                  rounded="2xl"
-                  flexDir={"column"}
-                  bgColor="gray"
-                  p={"2rem"}
-                  gap="1rem"
-                  color={"#fff"}
-                  justify="space-between"
-                >
-                  {/* Render video if not image */}
-                  {isImage?.includes(nft) ? (
-                    <img src={nft} />
-                  ) : (
-                    <Box
-                      as="iframe"
-                      src={nft}
-                      width="100%"
-                      rounded="2xl"
-                      sx={{
-                        aspectRatio: "16/9",
-                      }}
-                    />
-                  )}
-                </Flex>
-              ))
-            : bldSpaceImages.map((nft, i) => (
-                <Flex
-                  key={i}
-                  rounded="2xl"
-                  flexDir={"column"}
-                  bgColor="gray"
-                  p={"2rem"}
-                  gap="1rem"
-                  color={"#fff"}
-                  justify="space-between"
-                >
-                  {/* Render video if not image loading state */}
-                  {isImage?.includes(nft) ? (
-                    <img src={<Spinner />} alt="" />
-                  ) : (
-                    <Box
-                      rounded="2xl"
-                      as="iframe"
-                      src={<Spinner />}
-                      width="100%"
-                      sx={{
-                        aspectRatio: "16/9",
-                      }}
-                    />
-                  )}
-                </Flex>
-              ))}
+      <SimpleGrid columns={[6, null]} spacing="20px">
+          {/* If loading is false, then load LearnWeb3 NFT */}
+          {loading ? (
+            <Progress hasStripe value={64}  />
+          ) :  (bldSpaceImages &&
+            bldSpaceImages.map((nft, i) => {
+              <Flex
+                key={i}
+                rounded="2xl"
+                flexDir={"column"}
+                bgColor="gray"
+                p={"2rem"}
+                gap="1rem"
+                color={"#fff"}
+                justify="space-between"
+              >
+                {/* Check if nft is image(TODO!: We could display image and video separately) */}
+                {isImage?.includes(nft) ? (
+                  <img src={nft} />
+                ) : (
+                  <Box
+                    rounded="2xl"
+                    as="iframe"
+                    src={nft}
+                    width="100%"
+                    sx={{
+                      aspectRatio: "16/9",
+                    }}
+                  />
+                )}
+              </Flex>;
+            }))}
         </SimpleGrid>
+        
       </Flex>
     </Box>
   );
