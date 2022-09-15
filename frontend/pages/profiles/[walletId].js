@@ -154,21 +154,18 @@ export default function ProfileNFTs({ users }) {
   }
 
   useEffect(() => {
-    if (router.query.walletId) {
-      if (users) {
-        setIsLoading(false);
-      Promise.all([handleLearnWeb3NFTs(), handleBLDSpaceNFTs()])
-        .then((learnWeb3NFTs, bldSpaceNFTs) => {
-          setLearnWeb3NFTs(learnWeb3NFTs);
-          setBldSpaceNFTS(bldSpaceNFTs);
-        })
-        .finally(() => setIsLoading(false));
-    }
+    if (router.query.walletId && users) {
+    
+      setIsLoading(false);
+      async function handleData() {
+        const learnWeb3NFTs = await handleLearnWeb3NFTs();
+        const bldSpaceNFTs = await handleBLDSpaceNFTs();
+        setLearnWeb3NFTs(learnWeb3NFTs);
+        setBldSpaceNFTS(bldSpaceNFTs)
+      }
+      handleData();
   }
-  }, [users]);
-
-  console.log('learnWeb3NFTs', learnWeb3NFTs);
-  console.log('bldSpaceNFTs', learnWeb3NFTs);
+  }, []);
 
   // Check for image or video nft
   const isImage = [".gif", ".jpg", ".jpeg", ".png"]; //you can add more
