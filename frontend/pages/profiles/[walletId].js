@@ -155,6 +155,8 @@ export default function ProfileNFTs({ users }) {
 
   useEffect(() => {
     if (router.query.walletId) {
+      if (users) {
+        setIsLoading(false);
       Promise.all([handleLearnWeb3NFTs(), handleBLDSpaceNFTs()])
         .then((learnWeb3NFTs, bldSpaceNFTs) => {
           setLearnWeb3NFTs(learnWeb3NFTs);
@@ -162,7 +164,8 @@ export default function ProfileNFTs({ users }) {
         })
         .finally(() => setIsLoading(false));
     }
-  }, []);
+  }
+  }, [users]);
 
   console.log('learnWeb3NFTs', learnWeb3NFTs);
   console.log('bldSpaceNFTs', learnWeb3NFTs);
