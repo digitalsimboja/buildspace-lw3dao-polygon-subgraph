@@ -12,6 +12,7 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { SUBGRAPH_URL } from "../constants";
 
+
 const polygonChain = {
   id: 137,
   name: "Matic Mainnet",
