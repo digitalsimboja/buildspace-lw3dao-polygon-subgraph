@@ -8,8 +8,8 @@ import {
   GridItem,
   Divider,
   Spinner,
-  Image,
 } from "@chakra-ui/react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { ApolloClient, InMemoryCache, gql, useQuery } from "@apollo/client";
 import Navbar from "../../components/Navbar";
@@ -49,56 +49,23 @@ export default function ProfileNFTs({ users }) {
     return lweb3;
   }
 
-  const DisplayBLDSpaceNFTImage = ({ nft }) => {
+  /* ======IMAGES ====*/
+  const myLoader = ({ src, width, quality }) => {
+    return `${src}?w=${width}&q=${quality || 75}`;
+  };
+
+  const NFTImage = (props) => {
     return (
-      <GridItem>
-        <img src={nft} alt={"BuildSpace NFT"} />
-      </GridItem>
+      <Image
+        loader={myLoader}
+        src="me.png"
+        alt="Picture of the author"
+        width={500}
+        height={500}
+      />
     );
   };
 
-  const DisplayLearnWeb3NFTImage = ({ nft }) => {
-    console.log("lweb3", nft);
-    return (
-      <GridItem>
-        <img src={lweb3} alt={"LearnWeb3 Graduate NFT"} />
-      </GridItem>
-    );
-  };
-
-  const DisplayLearnWeb3NFTVideo = ({ lweb3 }) => {
-    return (
-      <GridItem>
-        {/* insert video with chakra */}
-        <Box
-          rounded="2xl"
-          as="iframe"
-          src={lweb3}
-          width="100%"
-          sx={{
-            aspectRatio: "16/9",
-          }}
-        />
-      </GridItem>
-    );
-  };
-
-  const DisplayBLDSpaceNFTVideo = ({ nft }) => {
-    return (
-      <GridItem>
-        {/* insert video with chakra */}
-        <Box
-          rounded="2xl"
-          as="iframe"
-          src={nft}
-          width="100%"
-          sx={{
-            aspectRatio: "16/9",
-          }}
-        />
-      </GridItem>
-    );
-  };
 
   useEffect(() => {
     async function filterLearnWeb3NFT() {
@@ -127,18 +94,17 @@ export default function ProfileNFTs({ users }) {
       learnWeb3NFTs
         .flatMap((item) => item.flatMap((x) => x))
         .map(async (d, i) => {
-         
           const tokenURI = await d.tokenURI.replace(
             "ipfs://",
             "https://ipfs.io/ipfs/"
           );
-    
+
           const { data } = await axios.get(tokenURI);
           const imageURI = data.image.replace(
             "ipfs://",
             "https://ipfs.io/ipfs/"
-          )
-          data.image = imageURI
+          );
+          data.image = imageURI;
           return data;
         })
     );
@@ -155,7 +121,6 @@ export default function ProfileNFTs({ users }) {
       bldSpaceNFTs
         .flatMap((item) => item.flatMap((x) => x))
         .map(async (d, i) => {
-         
           const tokenURI = await d.tokenURI.replace(
             "ipfs://",
             "https://ipfs.io/ipfs/"
@@ -181,79 +146,8 @@ export default function ProfileNFTs({ users }) {
       <Navbar />
       <Header />
       <Divider mt={20} mb={2} />
-      <Box as={Container} maxW="7xl" mb={5} p={4}>
-        <chakra.h3>LearnWeb3GraduatesNFT Proof of Knowledge</chakra.h3>
-        <Grid
-          templateColumns={{
-            base: "repeat(1, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(4, 1fr)",
-          }}
-          gap={{ base: "8", sm: "12", md: "16" }}
-          h={20}
-        >
-          {learnWeb3NFTs.map((nft,i) => {
-            // Display the image and video
-
-
-          }) 
-        }
-
-        </Grid>
-      </Box>
-    </>
-  );
-
-  return (
-    <>
-      <Navbar />
-      <Header />
       <Divider mt={20} mb={2} />
-      {!isLoading ? (
-        <Box as={Container} maxW="7xl" mt={5} p={4}>
-          <chakra.h3>LearnWeb3GraduatesNFT Proof of Knowledge</chakra.h3>
-          <Grid
-            templateColumns={{
-              base: "repeat(1, 1fr)",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
-            }}
-            gap={{ base: "8", sm: "12", md: "16" }}
-            h={20}
-          >
-            {learnWeb3NFTs &&
-              learnWeb3NFTs.map((lweb3, i) => {
-                // Display image and video together for now
-                isImage?.includes(lweb3) ? (
-                  <DisplayLearnWeb3NFTImage key={i} nft={lweb3} />
-                ) : (
-                  <DisplayLearnWeb3NFTVideo key={i} nft={lweb3} />
-                );
-              })}
-          </Grid>
-          <Divider mt={12} mb={10} />
-          <chakra.h3>BuildSpace nfts</chakra.h3>
-          <Grid
-            templateColumns={{
-              base: "repeat(1, 1fr)",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
-            }}
-            gap={{ base: "8", sm: "12", md: "16" }}
-            h={20}
-          >
-            {bldSpaceNFTs &&
-              bldSpaceNFTs.map((bld, i) => {
-                // Display image and video together for now
-                isImage?.includes(bld) ? (
-                  <DisplayBLDSpaceNFTImage key={i} nft={bld} />
-                ) : (
-                  <DisplayBLDSpaceNFTVideo key={i} nft={bld} />
-                );
-              })}
-          </Grid>
-        </Box>
-      ) : (
+      {isLoading ? (
         <Box p={6} justifyContent={"center"} alignItems={"center"} mt={20}>
           <Box
             position={"absolute"}
@@ -273,13 +167,95 @@ export default function ProfileNFTs({ users }) {
             />
           </Box>
         </Box>
+      ) : (
+        <Box as={Container} maxW="7xl" mt={5} p={4}>
+          <chakra.h3>LearnWeb3GraduatesNFT Proof of Knowledge</chakra.h3>
+          <Grid
+            templateColumns={{
+              base: "repeat(1, 1fr)",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(4, 1fr)",
+            }}
+            gap={{ base: "8", sm: "12", md: "16" }}
+            h={20}
+          >
+            {learnWeb3NFTs &&
+              learnWeb3NFTs.map((url, i) => {
+                console.log(url);
+                const extension = url.pathname.split(".")[1];
+                {
+                  isImage.includes(extension) && (
+                    <GridItem key={i}>
+                      <NFTImage
+                        loader={myLoader}
+                        src={url}
+                        width={500}
+                        height={500}
+                        alt="LearnWeb3Graduates Proof of Knowledge NFT"
+                      />
+                    </GridItem>
+                  );
+
+                  isVideo.includes(extension) && (
+                    <GridItem key={i}>
+                      <video
+                        autoPlay
+                        style={{ width: "500px", height: "500px" }}
+                      >
+                        <source src={url} />
+                      </video>
+                    </GridItem>
+                  );
+                }
+              })}
+          </Grid>
+          <Divider mt={12} mb={10} />
+          <chakra.h3>BuildSpace NFT</chakra.h3>
+          <Grid
+            templateColumns={{
+              base: "repeat(1, 1fr)",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(4, 1fr)",
+            }}
+            gap={{ base: "8", sm: "12", md: "16" }}
+            h={20}
+          >
+            {bldSpaceNFTs &&
+              bldSpaceNFTs.map((url, i) => {
+                const extension = url.pathname.split(".")[1];
+                {
+                  isImage.includes(extension) && (
+                    <GridItem key={i}>
+                      <NFTImage
+                        loader={myLoader}
+                        src={url}
+                        width={500}
+                        height={500}
+                        alt="Buildspace NFT"
+                      />
+                    </GridItem>
+                  );
+
+                  isVideo.includes(extension) && (
+                    <GridItem key={i}>
+                      <video
+                        autoPlay
+                        style={{ width: "500px", height: "500px" }}
+                      >
+                        <source src={url} />
+                      </video>
+                    </GridItem>
+                  );
+                }
+              })}
+          </Grid>
+        </Box>
       )}
     </>
   );
 }
 
 // Get the Data from Apolloclient with getStatic props
-
 export async function getStaticPaths() {
   return {
     paths: [],
@@ -289,18 +265,16 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
   const walletId = context.params?.walletId;
-  console.log(walletId);
 
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
     cache: new InMemoryCache(),
   });
-  //{users(id: "${walletId}") {
-  //where: { id: "0x083fe503ea4e6319bf5fd710316124a36e13bda9" }
+
   const { data } = await appolloClient.query({
     query: gql`
       query getUserNFTs {
-        users(where: { id: "0x083fe503ea4e6319bf5fd710316124a36e13bda9" }) {
+        users(id: "${walletId}") {
           id
           skillNFTs {
             id

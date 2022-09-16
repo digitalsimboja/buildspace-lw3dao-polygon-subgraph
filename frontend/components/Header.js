@@ -32,7 +32,7 @@ export default function Header() {
         gap={4}
         w={"full"}
       >
-        <GridItem colSpan={1} >
+        <GridItem colSpan={1}>
           <VStack alignItems="flex-start" spacing="20px">
             <Image
               borderRadius="full"
@@ -56,8 +56,6 @@ export default function Header() {
           </Flex>
         </GridItem>
       </Grid>
-      
-      
     </Box>
   );
 }
