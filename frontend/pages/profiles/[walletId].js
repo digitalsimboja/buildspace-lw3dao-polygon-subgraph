@@ -8,6 +8,7 @@ import {
   GridItem,
   Divider,
   Spinner,
+  Image,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { ApolloClient, InMemoryCache, gql, useQuery } from "@apollo/client";
@@ -31,7 +32,6 @@ export default function ProfileNFTs({ users }) {
   const [isLoading, setIsLoading] = useState(true);
 
   async function handleLearnWeb3NFTs() {
-    console.log("lweb3", learnWeb3NFTs);
     const lweb3 = [];
     learnWeb3NFTs.map(async (nft, i) => {
       let tokenURI = nft.tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
@@ -57,8 +57,8 @@ export default function ProfileNFTs({ users }) {
     );
   };
 
-  const DisplayLearnWeb3NFTImage = ({ lweb3 }) => {
-    console.log("lweb3", lweb3);
+  const DisplayLearnWeb3NFTImage = ({ nft }) => {
+    console.log("lweb3", nft);
     return (
       <GridItem>
         <img src={lweb3} alt={"LearnWeb3 Graduate NFT"} />
@@ -105,7 +105,6 @@ export default function ProfileNFTs({ users }) {
       let learnWeb3Media = await users[0]["skillNFTs"].filter(
         (l, i) => l.organization === "LearnWeb3GraduatesNFT"
       );
-      console.log("learnWeb3Media inside useEffect", learnWeb3Media);
       const learnWeb3NFTs = await handleLearnWeb3NFTs(learnWeb3Media);
       setLearnWeb3NFTs(learnWeb3NFTs);
     }
@@ -121,24 +120,30 @@ export default function ProfileNFTs({ users }) {
   }, [router]);
 
   async function handleLearnWeb3NFTs(...learnWeb3NFTs) {
-    console.log("Handling tokenURI state of bldSpaceNFTs...", learnWeb3NFTs);
+    console.log("Handling tokenURI state of learnWeb3NFTs...", learnWeb3NFTs);
 
     // Handle the tokenURI
     const response = await Promise.all(
       learnWeb3NFTs
         .flatMap((item) => item.flatMap((x) => x))
         .map(async (d, i) => {
-          console.log("dd: ", d);
+         
           const tokenURI = await d.tokenURI.replace(
             "ipfs://",
             "https://ipfs.io/ipfs/"
           );
+    
           const { data } = await axios.get(tokenURI);
+          const imageURI = data.image.replace(
+            "ipfs://",
+            "https://ipfs.io/ipfs/"
+          )
+          data.image = imageURI
           return data;
         })
     );
     const learnWeb3NFTsURI = response.map((res) => res.image);
-    console.log("lwb3NFT", learnWeb3NFTsURI);
+
     return learnWeb3NFTsURI;
   }
 
@@ -150,7 +155,7 @@ export default function ProfileNFTs({ users }) {
       bldSpaceNFTs
         .flatMap((item) => item.flatMap((x) => x))
         .map(async (d, i) => {
-          console.log("dd: ", d);
+         
           const tokenURI = await d.tokenURI.replace(
             "ipfs://",
             "https://ipfs.io/ipfs/"
@@ -160,7 +165,7 @@ export default function ProfileNFTs({ users }) {
         })
     );
     const bldSpaceNFTsURI = response.map((res) => res.image);
-    console.log("lwb3NFT", bldSpaceNFTsURI);
+
     return bldSpaceNFTsURI;
   }
 
@@ -175,7 +180,27 @@ export default function ProfileNFTs({ users }) {
     <>
       <Navbar />
       <Header />
-      <Divider />
+      <Divider mt={20} mb={2} />
+      <Box as={Container} maxW="7xl" mb={5} p={4}>
+        <chakra.h3>LearnWeb3GraduatesNFT Proof of Knowledge</chakra.h3>
+        <Grid
+          templateColumns={{
+            base: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(4, 1fr)",
+          }}
+          gap={{ base: "8", sm: "12", md: "16" }}
+          h={20}
+        >
+          {learnWeb3NFTs.map((nft,i) => {
+            // Display the image and video
+
+
+          }) 
+        }
+
+        </Grid>
+      </Box>
     </>
   );
 

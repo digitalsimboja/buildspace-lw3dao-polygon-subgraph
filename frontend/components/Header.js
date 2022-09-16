@@ -41,7 +41,7 @@ export default function Header() {
               alt="Dan Abramov"
             />
             <Box p={6}>
-              <Stack spacing={0} align={"center"} mb={5}>
+              <Stack spacing={0} align={"center"} mb={2}>
                 <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
                   John Doe
                 </Heading>
@@ -56,6 +56,7 @@ export default function Header() {
           </Flex>
         </GridItem>
       </Grid>
+      
       
     </Box>
   );
