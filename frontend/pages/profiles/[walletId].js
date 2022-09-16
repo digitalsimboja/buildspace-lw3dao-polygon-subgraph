@@ -31,27 +31,7 @@ export default function ProfileNFTs({ users }) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // async function handleLearnWeb3NFTs() {
-  //   const lweb3 = [];
-  //   learnWeb3NFTs.map(async (nft, i) => {
-  //     let tokenURI = nft.tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
-
-  //     //get the metadata
-  //     const metadata = await axios
-  //       .get(tokenURI)
-  //       .then((response) => response.data)
-  //       .catch((err) => console.error(err));
-
-  //     //Extract the image
-  //     let media = await metadata.image;
-  //     lweb3.push(media);
-  //   });
-  //   return lweb3;
-  // }
-
-  /* ======IMAGES ====*/
-
-  const get_url_extension = ({ url }) => {
+  const get_url_extension = (url) => {
     return url.split(/[#?]/)[0].split(".").pop().trim();
   };
   const myLoader = ({ src, width, quality }) => {
@@ -87,11 +67,11 @@ export default function ProfileNFTs({ users }) {
       }
     }
     async function filterBLDSpaceNFT() {
-       // Get the bldSpaceNFT from the data returned from the subgraph
+      // Get the bldSpaceNFT from the data returned from the subgraph
       let bldSpaceMedia = await users[0]["skillNFTs"].filter(
         (l, i) => l.organization === "buildspace"
       );
-       // Resolve the metadata to extract the URI of the NFT
+      // Resolve the metadata to extract the URI of the NFT
       const bldSpaceNFTs = await handleBLDSpaceNFTs(bldSpaceMedia);
       if (!bldSpaceNFTs) {
         setIsLoading(true);
