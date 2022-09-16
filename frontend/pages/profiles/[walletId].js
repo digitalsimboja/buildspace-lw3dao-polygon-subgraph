@@ -31,25 +31,29 @@ export default function ProfileNFTs({ users }) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  async function handleLearnWeb3NFTs() {
-    const lweb3 = [];
-    learnWeb3NFTs.map(async (nft, i) => {
-      let tokenURI = nft.tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
+  // async function handleLearnWeb3NFTs() {
+  //   const lweb3 = [];
+  //   learnWeb3NFTs.map(async (nft, i) => {
+  //     let tokenURI = nft.tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/");
 
-      //get the metadata
-      const metadata = await axios
-        .get(tokenURI)
-        .then((response) => response.data)
-        .catch((err) => console.error(err));
+  //     //get the metadata
+  //     const metadata = await axios
+  //       .get(tokenURI)
+  //       .then((response) => response.data)
+  //       .catch((err) => console.error(err));
 
-      //Extract the image
-      let media = await metadata.image;
-      lweb3.push(media);
-    });
-    return lweb3;
-  }
+  //     //Extract the image
+  //     let media = await metadata.image;
+  //     lweb3.push(media);
+  //   });
+  //   return lweb3;
+  // }
 
   /* ======IMAGES ====*/
+
+  const get_url_extension = ({ url }) => {
+    return url.split(/[#?]/)[0].split(".").pop().trim();
+  };
   const myLoader = ({ src, width, quality }) => {
     return `${src}?w=${width}&q=${quality || 75}`;
   };
@@ -58,32 +62,52 @@ export default function ProfileNFTs({ users }) {
     return (
       <Image
         loader={myLoader}
-        src="me.png"
-        alt="Picture of the author"
-        width={500}
-        height={500}
+        src={props.src}
+        alt={props.alt}
+        width={props.width}
+        height={props.height}
       />
     );
   };
 
-
   useEffect(() => {
     async function filterLearnWeb3NFT() {
+      // Get the learnWeb3NFT from the data returned from the subgraph
       let learnWeb3Media = await users[0]["skillNFTs"].filter(
         (l, i) => l.organization === "LearnWeb3GraduatesNFT"
       );
+      // Resolve the metadata to extract the URI of the NFT
       const learnWeb3NFTs = await handleLearnWeb3NFTs(learnWeb3Media);
-      setLearnWeb3NFTs(learnWeb3NFTs);
+      if (!learnWeb3NFTs) {
+        setIsLoading(true);
+      } else {
+        // Set the state variable for returning to the frontend and the loading state to `false`
+        setLearnWeb3NFTs(learnWeb3NFTs);
+        setIsLoading(false);
+      }
     }
     async function filterBLDSpaceNFT() {
+       // Get the bldSpaceNFT from the data returned from the subgraph
       let bldSpaceMedia = await users[0]["skillNFTs"].filter(
         (l, i) => l.organization === "buildspace"
       );
+       // Resolve the metadata to extract the URI of the NFT
       const bldSpaceNFTs = await handleBLDSpaceNFTs(bldSpaceMedia);
-      setBldSpaceNFTS(bldSpaceNFTs);
+      if (!bldSpaceNFTs) {
+        setIsLoading(true);
+      } else {
+        // Set the state variable for returning to the frontend and the loading state to `false`
+        setBldSpaceNFTS(bldSpaceNFTs);
+        setIsLoading(false);
+      }
     }
-    filterLearnWeb3NFT();
-    filterBLDSpaceNFT();
+    if (users) {
+      // Call the filtering functions only when users data from the subgraph becomes available
+      filterLearnWeb3NFT();
+      filterBLDSpaceNFT();
+    } else {
+      setIsLoading(true);
+    }
   }, [router]);
 
   async function handleLearnWeb3NFTs(...learnWeb3NFTs) {
@@ -138,14 +162,10 @@ export default function ProfileNFTs({ users }) {
   const isImage = [".gif", ".jpg", ".jpeg", ".png"]; //you can add more
   const isVideo = [".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mp4"];
 
-  console.log("learnWeb3URI for display", learnWeb3NFTs);
-  console.log("bldSpaceURI: for display", bldSpaceNFTs);
-
   return (
     <>
       <Navbar />
       <Header />
-      <Divider mt={20} mb={2} />
       <Divider mt={20} mb={2} />
       {isLoading ? (
         <Box p={6} justifyContent={"center"} alignItems={"center"} mt={20}>
@@ -181,8 +201,8 @@ export default function ProfileNFTs({ users }) {
           >
             {learnWeb3NFTs &&
               learnWeb3NFTs.map((url, i) => {
-                console.log(url);
-                const extension = url.pathname.split(".")[1];
+                console.log("learnWeb3URI for display", url);
+                const extension = get_url_extension(url);
                 {
                   isImage.includes(extension) && (
                     <GridItem key={i}>
@@ -222,12 +242,13 @@ export default function ProfileNFTs({ users }) {
           >
             {bldSpaceNFTs &&
               bldSpaceNFTs.map((url, i) => {
-                const extension = url.pathname.split(".")[1];
+                const extension = get_url_extension(url);
                 {
                   isImage.includes(extension) && (
                     <GridItem key={i}>
                       <NFTImage
                         loader={myLoader}
+                        boxSize="150px"
                         src={url}
                         width={500}
                         height={500}

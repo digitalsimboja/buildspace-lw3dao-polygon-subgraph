@@ -13,9 +13,9 @@ export default function Home() {
   const { address } = useAccount();
 
   async function showUserProfile() {
-    if (address) {
+
       return router.push(`profiles/${address}`);
-    }
+
   }
 
   async function goHome() {
