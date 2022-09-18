@@ -3,51 +3,30 @@ import {
   Box,
   Container,
   chakra,
-  Grid,
-  Progress,
-  GridItem,
+  SimpleGrid,
   Divider,
   Spinner,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import { ApolloClient, InMemoryCache, gql, useQuery } from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import Navbar from "../../components/Navbar";
 import Header from "../../components/Header";
 import { SUBGRAPH_URL } from "../../constants";
-import { GetStaticProps, GetStaticPaths } from "next";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function ProfileNFTs({ users }) {
   const router = useRouter();
-  const walletId = router.query.walletId;
+  //const walletId = router.query.walletId;
 
   // State variables
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
   const [bldSpaceNFTs, setBldSpaceNFTS] = useState([]);
 
-  const [learnWeb3URI, setLearnWeb3URI] = useState([]);
-  const [bldSpaceURI, setBlsSpaceURI] = useState([]);
-
   const [isLoading, setIsLoading] = useState(true);
 
   const get_url_extension = (url) => {
     return url.split(/[#?]/)[0].split(".").pop().trim();
-  };
-  const myLoader = ({ src, width, quality }) => {
-    return `${src}?w=${width}&q=${quality || 75}`;
-  };
-
-  const NFTImage = (props) => {
-    return (
-      <Image
-        loader={myLoader}
-        src={props.src}
-        alt={props.alt}
-        width={props.width}
-        height={props.height}
-      />
-    );
   };
 
   useEffect(() => {
@@ -81,18 +60,16 @@ export default function ProfileNFTs({ users }) {
         setIsLoading(false);
       }
     }
-    if (users) {
+    if (users && router.query.walletId) {
       // Call the filtering functions only when users data from the subgraph becomes available
       filterLearnWeb3NFT();
       filterBLDSpaceNFT();
     } else {
       setIsLoading(true);
     }
-  }, [router]);
+  }, [users, router]);
 
   async function handleLearnWeb3NFTs(...learnWeb3NFTs) {
-    console.log("Handling tokenURI state of learnWeb3NFTs...", learnWeb3NFTs);
-
     // Handle the tokenURI
     const response = await Promise.all(
       learnWeb3NFTs
@@ -109,6 +86,7 @@ export default function ProfileNFTs({ users }) {
             "https://ipfs.io/ipfs/"
           );
           data.image = imageURI;
+
           return data;
         })
     );
@@ -118,8 +96,6 @@ export default function ProfileNFTs({ users }) {
   }
 
   async function handleBLDSpaceNFTs(...bldSpaceNFTs) {
-    console.log("Handling tokenURI state of bldSpaceNFTs...", bldSpaceNFTs);
-
     // Handle the tokenURI
     const response = await Promise.all(
       bldSpaceNFTs
@@ -139,11 +115,28 @@ export default function ProfileNFTs({ users }) {
   }
 
   // Check for image or video nft
-  const isImage = [".gif", ".jpg", ".jpeg", ".png"]; //you can add more
-  const isVideo = [".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mp4"];
+  const isImage = ["gif", "jpg", "jpeg", "png"]; //you can add more
+  const isVideo = ["mpg", "mp2", "mpeg", "mpe", "mpv", "mp4"];
+
+  function DisplayLearnWeb3ImageNFT(url, index) {
+
+    return (
+      <Box key={index} url={url} height="200px" rounded={"2xl"}>
+        <Image
+          alt="LearnWeb3 Graduate NFT"
+          src={url.url}
+          width="0"
+          height="0"
+          sizes="100vw"
+          style={{ width: "100%", height: "auto" }}
+        />
+      </Box>
+    );
+  }
 
   return (
     <>
+      {/* Insert the Navbar and Header */}
       <Navbar />
       <Header />
       <Divider mt={20} mb={2} />
@@ -168,88 +161,88 @@ export default function ProfileNFTs({ users }) {
           </Box>
         </Box>
       ) : (
-        <Box as={Container} maxW="7xl" mt={5} p={4}>
-          <chakra.h3>LearnWeb3GraduatesNFT Proof of Knowledge</chakra.h3>
-          <Grid
-            templateColumns={{
-              base: "repeat(1, 1fr)",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
-            }}
-            gap={{ base: "8", sm: "12", md: "16" }}
-            h={20}
-          >
-            {learnWeb3NFTs &&
-              learnWeb3NFTs.map((url, i) => {
-                console.log("learnWeb3URI for display", url);
-                const extension = get_url_extension(url);
-                {
-                  isImage.includes(extension) && (
-                    <GridItem key={i}>
-                      <NFTImage
-                        loader={myLoader}
-                        src={url}
-                        width={500}
-                        height={500}
-                        alt="LearnWeb3Graduates Proof of Knowledge NFT"
-                      />
-                    </GridItem>
-                  );
+        <Box>
+          <Box as={Container} maxW="7xl" mt={5} p={4}>
+            <chakra.h3>LearnWeb3GraduatesNFT Image NFTs</chakra.h3>
+            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+              {learnWeb3NFTs &&
+                learnWeb3NFTs.map((url, index) => {
+                  const extension = get_url_extension(url);
+                  if (isImage.includes(extension)) {
+                    return <DisplayLearnWeb3ImageNFT url={url} key={index} />;
+                  } else {
+                    return null;
+                  }
+                })}
+            </SimpleGrid>
 
-                  isVideo.includes(extension) && (
-                    <GridItem key={i}>
-                      <video
-                        autoPlay
-                        style={{ width: "500px", height: "500px" }}
-                      >
-                        <source src={url} />
-                      </video>
-                    </GridItem>
-                  );
-                }
-              })}
-          </Grid>
-          <Divider mt={12} mb={10} />
-          <chakra.h3>BuildSpace NFT</chakra.h3>
-          <Grid
-            templateColumns={{
-              base: "repeat(1, 1fr)",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(4, 1fr)",
-            }}
-            gap={{ base: "8", sm: "12", md: "16" }}
-            h={20}
-          >
-            {bldSpaceNFTs &&
-              bldSpaceNFTs.map((url, i) => {
-                const extension = get_url_extension(url);
-                {
-                  isImage.includes(extension) && (
-                    <GridItem key={i}>
-                      <NFTImage
-                        loader={myLoader}
-                        boxSize="150px"
-                        src={url}
-                        width={500}
-                        height={500}
-                        alt="Buildspace NFT"
-                      />
-                    </GridItem>
-                  );
-
-                  isVideo.includes(extension) && (
-                    <GridItem key={i}>
-                      <video
-                        autoPlay
-                        style={{ width: "500px", height: "500px" }}
-                      >
-                        <source src={url} />
-                      </video>
-                    </GridItem>
-                  );
-                }
-              })}
-          </Grid>
+            <Divider mt={2} mb={2} />
+            <chakra.h3>LearnWeb3GraduatesNFT Video NFTs</chakra.h3>
+            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+              {learnWeb3NFTs &&
+                learnWeb3NFTs.map((url, index) => {
+                  const extension = get_url_extension(url);
+                  if (isVideo.includes(extension)) {
+                    return (
+                      <Box
+                        key={index}
+                        url={url}
+                        bg="tomato"
+                        height="200px"
+                        rounded={"2xl"}
+                      ></Box>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+            </SimpleGrid>
+          </Box>
+          <Divider mt={2} mb={2} />
+          <Box as={Container} maxW="7xl" mt={5} p={4}>
+            <chakra.h3>BuildSpace Image</chakra.h3>
+            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+              {bldSpaceNFTs &&
+                bldSpaceNFTs.map((url, index) => {
+                  const extension = get_url_extension(url);
+                  if (isImage.includes(extension)) {
+                    return (
+                      <Box
+                        key={index}
+                        url={url}
+                        bg="tomato"
+                        height="200px"
+                        rounded={"2xl"}
+                      ></Box>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+            </SimpleGrid>
+            <Divider mt={2} mb={2} />
+            <chakra.h3>BuildSpace Video NFTs</chakra.h3>
+            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+              {bldSpaceNFTs &&
+                bldSpaceNFTs.map((url, index) => {
+                  const extension = get_url_extension(url);
+                  if (isVideo.includes(extension)) {
+                    return (
+                      <Box
+                        key={index}
+                        url={url}
+                        bg="tomato"
+                        height="200px"
+                        rounded={"2xl"}
+                      ></Box>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+            </SimpleGrid>
+          </Box>
+          <Divider mt={20} mb={2} />
         </Box>
       )}
     </>
@@ -265,17 +258,18 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  const walletId = context.params?.walletId;
+  //const walletId = context.params?.walletId;
 
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
     cache: new InMemoryCache(),
   });
-
+  // users(where: {id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876"})
+  //users(id: "${walletId}")
   const { data } = await appolloClient.query({
     query: gql`
       query getUserNFTs {
-        users(id: "${walletId}") {
+        users(where: { id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876" }) {
           id
           skillNFTs {
             id
