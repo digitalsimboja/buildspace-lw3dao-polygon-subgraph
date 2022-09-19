@@ -178,7 +178,12 @@ export default function ProfileNFTs({ users }) {
             </SimpleGrid>
             <Divider mt={12} mb={2} />
             <chakra.h3>LearnWeb3GraduatesNFT Video NFTs</chakra.h3>
-            <SimpleGrid columns={[2, null, 4]} spacing="40px" h={'200px'} mb={4}>
+            <SimpleGrid
+              columns={[2, null, 4]}
+              spacing="40px"
+              h={"200px"}
+              mb={4}
+            >
               {learnWeb3NFTs &&
                 learnWeb3NFTs.map((url, index) => {
                   const extension = get_url_extension(url);
@@ -221,7 +226,7 @@ export default function ProfileNFTs({ users }) {
                   }
                 })}
             </SimpleGrid>
-            
+
             <Divider mt={12} mb={12} />
             <chakra.h3>BuildSpace Video NFTs</chakra.h3>
             <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
@@ -266,12 +271,11 @@ export async function getStaticProps(context) {
     uri: SUBGRAPH_URL,
     cache: new InMemoryCache(),
   });
-  // users(where: {id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876"})
-  //users(id: "${walletId}")
+
   const { data } = await appolloClient.query({
     query: gql`
       query getUserNFTs {
-        users(where: { id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876" }) {
+        users(id: "${walletId}") {
           id
           skillNFTs {
             id
