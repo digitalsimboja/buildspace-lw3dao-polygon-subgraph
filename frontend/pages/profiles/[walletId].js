@@ -265,7 +265,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  //const walletId = context.params?.walletId;
+  const walletId = context.params?.walletId;
 
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
