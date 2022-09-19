@@ -214,7 +214,7 @@ export default function ProfileNFTs({ users }) {
           </Box>
           <Box as={Container} maxW="7xl" mt={5} p={4}>
             <Divider mt={2} mb={2} />
-            <chakra.h3>BuildSpace Image</chakra.h3>
+            <chakra.h3>BuildSpace NFTs</chakra.h3>
             <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
               {bldSpaceNFTs &&
                 bldSpaceNFTs.map((url, index) => {
@@ -245,8 +245,9 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  const walletId = context.params?.walletId;
-  
+  // const walletId = context.params?.walletId;
+  // users(id: "${walletId}") {
+
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
     cache: new InMemoryCache(),
@@ -255,7 +256,8 @@ export async function getStaticProps(context) {
   const { data } = await appolloClient.query({
     query: gql`
       query getUserNFTs {
-        users(id: "${walletId}") {
+        users(where: { id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876" }) {
+        
           id
           skillNFTs {
             id
