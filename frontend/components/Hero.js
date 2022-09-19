@@ -43,9 +43,7 @@ export default function Hero() {
             alignSelf={"center"}
             position={"relative"}
           >
-            
-              <ConnectButton />
-           
+            <ConnectButton />
           </Stack>
         </Stack>
       </Container>

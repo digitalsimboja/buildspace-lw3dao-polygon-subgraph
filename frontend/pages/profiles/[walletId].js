@@ -119,12 +119,12 @@ export default function ProfileNFTs({ users }) {
   const isVideo = ["mpg", "mp2", "mpeg", "mpe", "mpv", "mp4"];
 
   function DisplayLearnWeb3ImageNFT(url, index) {
-
     return (
-      <Box key={index} url={url} height="200px" rounded={"2xl"}>
+      <Box key={index} url={url} height="150px" rounded={"2xl"} mb={12}>
         <Image
           alt="LearnWeb3 Graduate NFT"
           src={url.url}
+          rounded={"2xl"}
           width="0"
           height="0"
           sizes="100vw"
@@ -139,7 +139,7 @@ export default function ProfileNFTs({ users }) {
       {/* Insert the Navbar and Header */}
       <Navbar />
       <Header />
-      <Divider mt={20} mb={2} />
+
       {isLoading ? (
         <Box p={6} justifyContent={"center"} alignItems={"center"} mt={20}>
           <Box
@@ -163,8 +163,9 @@ export default function ProfileNFTs({ users }) {
       ) : (
         <Box>
           <Box as={Container} maxW="7xl" mt={5} p={4}>
-            <chakra.h3>LearnWeb3GraduatesNFT Image NFTs</chakra.h3>
-            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+            <Divider mt={12} mb={2} />
+            <chakra.h3 mb={4}>LearnWeb3GraduatesNFT Image NFTs</chakra.h3>
+            <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
               {learnWeb3NFTs &&
                 learnWeb3NFTs.map((url, index) => {
                   const extension = get_url_extension(url);
@@ -175,10 +176,9 @@ export default function ProfileNFTs({ users }) {
                   }
                 })}
             </SimpleGrid>
-
-            <Divider mt={2} mb={2} />
+            <Divider mt={12} mb={2} />
             <chakra.h3>LearnWeb3GraduatesNFT Video NFTs</chakra.h3>
-            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+            <SimpleGrid columns={[2, null, 4]} spacing="40px" h={'200px'} mb={4}>
               {learnWeb3NFTs &&
                 learnWeb3NFTs.map((url, index) => {
                   const extension = get_url_extension(url);
@@ -198,10 +198,11 @@ export default function ProfileNFTs({ users }) {
                 })}
             </SimpleGrid>
           </Box>
-          <Divider mt={2} mb={2} />
+
           <Box as={Container} maxW="7xl" mt={5} p={4}>
+            <Divider mt={12} mb={2} />
             <chakra.h3>BuildSpace Image</chakra.h3>
-            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+            <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
               {bldSpaceNFTs &&
                 bldSpaceNFTs.map((url, index) => {
                   const extension = get_url_extension(url);
@@ -220,9 +221,10 @@ export default function ProfileNFTs({ users }) {
                   }
                 })}
             </SimpleGrid>
-            <Divider mt={2} mb={2} />
+            
+            <Divider mt={12} mb={12} />
             <chakra.h3>BuildSpace Video NFTs</chakra.h3>
-            <SimpleGrid columns={[2, null, 4]} spacing="40px">
+            <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
               {bldSpaceNFTs &&
                 bldSpaceNFTs.map((url, index) => {
                   const extension = get_url_extension(url);

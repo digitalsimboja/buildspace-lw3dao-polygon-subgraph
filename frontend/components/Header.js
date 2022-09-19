@@ -5,7 +5,6 @@ import {
   Text,
   Stack,
   chakra,
-  Divider,
   Image,
   Grid,
   GridItem,
@@ -20,7 +19,8 @@ export default function Header() {
       as={Container}
       maxW="5xl"
       p={4}
-      h="200px"
+      mb={12}
+      h="150px"
       bgGradient="linear(to-l, #7928CA, #FF0080)"
     >
       <Grid
@@ -50,12 +50,8 @@ export default function Header() {
             </Box>
           </VStack>
         </GridItem>
-        <GridItem>
-          <Flex>
-            <chakra.h1 fontSize={"3xl"}></chakra.h1>
-          </Flex>
-        </GridItem>
       </Grid>
+      
     </Box>
   );
 }
