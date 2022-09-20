@@ -1,6 +1,6 @@
 import axios from "axios";
 import {
-  AspectRatio,
+  // AspectRatio,
   Box,
   Container,
   chakra,
@@ -143,24 +143,34 @@ export default function ProfileNFTs({ users }) {
   }
 
   function DisplayVideoNFT(url, index) {
+    console.log(url);
     return (
       <Box
-        as="video"
+        // as="video"
+        // key={index}
+        // controls
+        // src={`url`}
+        // // maxW="sm"
+        // width={"100%"}
+        // // height={"auto"}
+        // borderWidth="1px"
+        // borderRadius="2xl"
+        // overflow="hidden"
+        // alt=""
+        // objectFit="contain"
+        // // sx={{
+        // //   aspectRatio: "16/9",
+        // // }}
         key={index}
-        controls
-        src={url}
+        url={url}
+        mb={4}
         maxW="sm"
-        width={"100%"}
-        height={"auto"}
         borderWidth="1px"
         borderRadius="2xl"
         overflow="hidden"
-        alt=""
-        objectFit="contain"
-        sx={{
-          aspectRatio: "16/9",
-        }}
-      />
+      >
+        <video src={url.url} controls autoPlay></video>
+      </Box>
     );
   }
 
@@ -213,8 +223,9 @@ export default function ProfileNFTs({ users }) {
             </SimpleGrid>
           </Box>
           <Box as={Container} maxW="7xl" mt={5} p={4}>
-            <Divider mt={2} mb={2} />
             <chakra.h3>BuildSpace NFTs</chakra.h3>
+            <Divider mt={2} mb={2} />
+
             <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
               {bldSpaceNFTs &&
                 bldSpaceNFTs.map((url, index) => {
@@ -245,7 +256,8 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  // const walletId = context.params?.walletId;
+  const walletId = context.params?.walletId;
+  // users(where: { id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876" })
   // users(id: "${walletId}") {
 
   const appolloClient = new ApolloClient({
@@ -256,8 +268,7 @@ export async function getStaticProps(context) {
   const { data } = await appolloClient.query({
     query: gql`
       query getUserNFTs {
-        users(where: { id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876" }) {
-        
+        users(id: "${walletId}") {
           id
           skillNFTs {
             id
