@@ -10,7 +10,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 
-export default function Header({ address }) {
+export default function Header() {
   return (
     <Box
       rounded={"3xl"}
@@ -38,12 +38,16 @@ export default function Header({ address }) {
               src="https://bit.ly/dan-abramov"
               alt="Dan Abramov"
             />
-            <Box p={6} >
+            <Box p={6}>
               <Stack spacing={0} align={"center"} mb={2}>
-                <Heading color={'white'} fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
+                <Heading
+                  color={"white"}
+                  fontSize={"2xl"}
+                  fontWeight={500}
+                  fontFamily={"body"}
+                >
                   My Minted NFTS
                 </Heading>
-                <Text color={'white'} >{address}</Text>
               </Stack>
             </Box>
           </VStack>
