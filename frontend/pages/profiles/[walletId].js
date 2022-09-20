@@ -18,6 +18,7 @@ import { SUBGRAPH_URL } from "../../constants";
 
 export default function ProfileNFTs({ users }) {
   const router = useRouter();
+  const walletId = router.query.walletId;
 
   // State variables
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
@@ -175,7 +176,7 @@ export default function ProfileNFTs({ users }) {
       <Box bg={useColorModeValue("gray.800", "gray: 800")}>
         {/* Insert the Navbar and Header */}
         <Navbar />
-        <Header />
+        <Header address={walletId} />
 
         {isLoading ? (
           <Box p={6} justifyContent={"center"} alignItems={"center"} mt={20}>

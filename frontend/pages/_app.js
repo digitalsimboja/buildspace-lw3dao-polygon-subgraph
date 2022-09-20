@@ -39,7 +39,10 @@ const { chains, provider } = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => {
-        if (chain.id !== polygonChain.id) return null;
+        if (chain.id !== polygonChain.id) {
+          throw new Error("Error! Switch your network to Polygon Mainnnet");
+          return null;
+        };
         return { http: chain.rpcUrls.default };
       },
     }),
