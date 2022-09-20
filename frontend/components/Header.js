@@ -1,10 +1,8 @@
 import {
   Box,
-  Flex,
   Heading,
   Text,
   Stack,
-  chakra,
   Image,
   Grid,
   GridItem,
@@ -19,7 +17,7 @@ export default function Header() {
       as={Container}
       maxW="5xl"
       p={4}
-      mb={12}
+      mb={20}
       h="150px"
       bgGradient="linear(to-l, #7928CA, #FF0080)"
     >
@@ -40,18 +38,17 @@ export default function Header() {
               src="https://bit.ly/dan-abramov"
               alt="Dan Abramov"
             />
-            <Box p={6}>
+            <Box p={6} >
               <Stack spacing={0} align={"center"} mb={2}>
-                <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
+                <Heading color={'white'} fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
                   John Doe
                 </Heading>
-                <Text color={"gray:500"}>Fullstack Developer</Text>
+                <Text color={'white'} >Fullstack Developer</Text>
               </Stack>
             </Box>
           </VStack>
         </GridItem>
       </Grid>
-      
     </Box>
   );
 }

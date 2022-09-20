@@ -1,15 +1,4 @@
-import Head from "next/head";
-import {
-  Box,
-  Heading,
-  Container,
-  Text,
-  Button,
-  Stack,
-  Icon,
-  useColorModeValue,
-  createIcon,
-} from "@chakra-ui/react";
+import { Box, Heading, Container, Text, Stack } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Hero() {
@@ -30,7 +19,7 @@ export default function Hero() {
             Connect your wallet
             <br />
             <Text as={"span"} color={"green.400"}>
-              to view all your NFT collections
+              to view your NFT collections
             </Text>
           </Heading>
           <Text color={"gray.500"}>

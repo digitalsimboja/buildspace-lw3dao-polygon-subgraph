@@ -1,24 +1,23 @@
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import axios from "axios";
 import {
-  // AspectRatio,
   Box,
   Container,
   chakra,
   SimpleGrid,
   Divider,
   Spinner,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import Image from "next/image";
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import Navbar from "../../components/Navbar";
 import Header from "../../components/Header";
+import Navbar from "../../components/Navbar";
 import { SUBGRAPH_URL } from "../../constants";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 
 export default function ProfileNFTs({ users }) {
   const router = useRouter();
-  //const walletId = router.query.walletId;
 
   // State variables
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
@@ -146,21 +145,6 @@ export default function ProfileNFTs({ users }) {
     console.log(url);
     return (
       <Box
-        // as="video"
-        // key={index}
-        // controls
-        // src={`url`}
-        // // maxW="sm"
-        // width={"100%"}
-        // // height={"auto"}
-        // borderWidth="1px"
-        // borderRadius="2xl"
-        // overflow="hidden"
-        // alt=""
-        // objectFit="contain"
-        // // sx={{
-        // //   aspectRatio: "16/9",
-        // // }}
         key={index}
         url={url}
         mb={4}
@@ -168,8 +152,17 @@ export default function ProfileNFTs({ users }) {
         borderWidth="1px"
         borderRadius="2xl"
         overflow="hidden"
+        bgColor={"gray.800"}
       >
-        <video src={url.url} controls autoPlay></video>
+        <video
+          src={url.url}
+          controls
+          autoPlay
+          width="0"
+          height="0"
+          sizes="100vw"
+          style={{ width: "100%", height: "282px" }}
+        ></video>
       </Box>
     );
   }
@@ -179,70 +172,74 @@ export default function ProfileNFTs({ users }) {
 
   return (
     <>
-      {/* Insert the Navbar and Header */}
-      <Navbar />
-      <Header />
+      <Box bg={useColorModeValue("gray.800", "gray: 800")}>
+        {/* Insert the Navbar and Header */}
+        <Navbar />
+        <Header />
 
-      {isLoading ? (
-        <Box p={6} justifyContent={"center"} alignItems={"center"} mt={20}>
-          <Box
-            position={"absolute"}
-            top={"50%"}
-            left={"50%"}
-            mt={"100px"}
-            ml={"-50px"}
-            w={"100px"}
-            h={"100px"}
-          >
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
+        {isLoading ? (
+          <Box p={6} justifyContent={"center"} alignItems={"center"} mt={20}>
+            <Box
+              position={"absolute"}
+              top={"50%"}
+              left={"50%"}
+              mt={"100px"}
+              ml={"-50px"}
+              w={"100px"}
+              h={"100px"}
+            >
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            </Box>
           </Box>
-        </Box>
-      ) : (
-        <Box>
-          <Box as={Container} maxW="7xl" mt={5} p={4}>
-            <Divider mt={12} mb={4} />
-            <chakra.h3 mb={4}>LearnWeb3GraduatesNFT NFTs</chakra.h3>
-            <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
-              {learnWeb3NFTs &&
-                learnWeb3NFTs.map((url, index) => {
-                  const extension = get_url_extension(url);
-                  if (isImage.includes(extension)) {
-                    return <DisplayImageNFT url={url} key={index} />;
-                  } else if (isVideo.includes(extension)) {
-                    return <DisplayVideoNFT url={url} key={index} />;
-                  } else {
-                    return null;
-                  }
-                })}
-            </SimpleGrid>
-          </Box>
-          <Box as={Container} maxW="7xl" mt={5} p={4}>
-            <chakra.h3>BuildSpace NFTs</chakra.h3>
-            <Divider mt={2} mb={2} />
+        ) : (
+          <Box>
+            <Box as={Container} maxW="7xl" mt={5} p={4}>
+              <Divider mt={12} mb={4} />
+              <chakra.h3 color={"white"} mb={4}>
+                LearnWeb3GraduatesNFT NFTs
+              </chakra.h3>
+              <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
+                {learnWeb3NFTs &&
+                  learnWeb3NFTs.map((url, index) => {
+                    const extension = get_url_extension(url);
+                    if (isImage.includes(extension)) {
+                      return <DisplayImageNFT url={url} key={index} />;
+                    } else if (isVideo.includes(extension)) {
+                      return <DisplayVideoNFT url={url} key={index} />;
+                    } else {
+                      return null;
+                    }
+                  })}
+              </SimpleGrid>
+            </Box>
+            <Box as={Container} maxW="7xl" mt={5} p={4}>
+              <chakra.h3 color={"white"}>BuildSpace NFTs</chakra.h3>
+              <Divider mt={2} mb={2} />
 
-            <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
-              {bldSpaceNFTs &&
-                bldSpaceNFTs.map((url, index) => {
-                  const extension = get_url_extension(url);
-                  if (isImage.includes(extension)) {
-                    return <DisplayImageNFT url={url} key={index} />;
-                  } else if (isVideo.includes(extension)) {
-                    return <DisplayVideoNFT url={url} key={index} />;
-                  } else {
-                    return null;
-                  }
-                })}
-            </SimpleGrid>
+              <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
+                {bldSpaceNFTs &&
+                  bldSpaceNFTs.map((url, index) => {
+                    const extension = get_url_extension(url);
+                    if (isImage.includes(extension)) {
+                      return <DisplayImageNFT url={url} key={index} />;
+                    } else if (isVideo.includes(extension)) {
+                      return <DisplayVideoNFT url={url} key={index} />;
+                    } else {
+                      return null;
+                    }
+                  })}
+              </SimpleGrid>
+            </Box>
+            <Divider mt={20} mb={2} />
           </Box>
-          <Divider mt={20} mb={2} />
-        </Box>
-      )}
+        )}
+      </Box>
     </>
   );
 }
@@ -257,8 +254,6 @@ export async function getStaticPaths() {
 
 export async function getStaticProps(context) {
   const walletId = context.params?.walletId;
-  // users(where: { id: "0x018ffdb9efbc739e5b47b45e93eb28c7501f0876" })
-  // users(id: "${walletId}") {
 
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
