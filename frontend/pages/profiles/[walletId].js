@@ -19,7 +19,9 @@ import { SUBGRAPH_URL } from "../../constants";
 export default function ProfileNFTs({ users }) {
   const router = useRouter();
 
-   // State variables
+  console.log(users);
+
+  // State variables
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
   const [bldSpaceNFTs, setBldSpaceNFTS] = useState([]);
 
@@ -118,7 +120,7 @@ export default function ProfileNFTs({ users }) {
   const isImage = ["gif", "jpg", "jpeg", "png"]; //you can add more
   const isVideo = ["mpg", "mp2", "mpeg", "mpe", "mpv", "mp4"];
 
-  console.log("leaarweb3NFTS : ", learnWeb3NFTs)
+  console.log("leaarweb3NFTS : ", learnWeb3NFTs);
 
   function DisplayImageNFT(url, index) {
     return (
@@ -199,8 +201,13 @@ export default function ProfileNFTs({ users }) {
           <Box>
             <Box as={Container} maxW="7xl" mt={5} p={4}>
               <Divider mt={12} mb={4} />
-              <chakra.h3 color={"white"} mb={4}>
-                LearnWeb3GraduatesNFT NFTs
+              <chakra.h3
+                color={"white"}
+                mb={4}
+                fontSize="4xl"
+                fontWeight={"extrabold"}
+              >
+                LearnWeb3 NFTs
               </chakra.h3>
               <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
                 {learnWeb3NFTs &&
@@ -217,7 +224,14 @@ export default function ProfileNFTs({ users }) {
               </SimpleGrid>
             </Box>
             <Box as={Container} maxW="7xl" mt={5} p={4}>
-              <chakra.h3 color={"white"}>BuildSpace NFTs</chakra.h3>
+              <chakra.h3
+                color={"white"}
+                mb={4}
+                fontSize="4xl"
+                fontWeight={"extrabold"}
+              >
+                BuildSpace NFTs
+              </chakra.h3>
               <Divider mt={2} mb={2} />
 
               <SimpleGrid columns={[2, null, 4]} spacing="40px" mb={4}>
@@ -229,7 +243,7 @@ export default function ProfileNFTs({ users }) {
                     } else if (isVideo.includes(extension)) {
                       return <DisplayVideoNFT url={url} key={index} />;
                     } else {
-                      return null
+                      return null;
                     }
                   })}
               </SimpleGrid>
@@ -253,7 +267,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   let walletId = context.params?.walletId;
   walletId = walletId.toLowerCase();
-  
+
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
     cache: new InMemoryCache(),

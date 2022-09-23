@@ -1,7 +1,6 @@
 import {
   Box,
-  Heading,
-  Text,
+  chakra,
   Stack,
   Image,
   Grid,
@@ -40,14 +39,14 @@ export default function Header() {
             />
             <Box p={6}>
               <Stack spacing={0} align={"center"} mb={2}>
-                <Heading
+                <chakra.h3
                   color={"white"}
-                  fontSize={"2xl"}
-                  fontWeight={500}
-                  fontFamily={"body"}
+                  mb={4}
+                  fontSize="4xl"
+                  fontWeight={"extrabold"}
                 >
                   My Minted NFTS
-                </Heading>
+                </chakra.h3>
               </Stack>
             </Box>
           </VStack>
