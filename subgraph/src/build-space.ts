@@ -7,7 +7,10 @@ import { SkillsNft, User } from "../generated/schema";
 
 export function handleTransfer(event: TransferEvent): void {
   // Create a unique ID for the skillNft with the transaction hash
-  const id = event.transaction.hash.toHexString() + event.logIndex.toString();
+  const id =
+    event.transaction.hash.toHexString() +
+    event.logIndex.toString() +
+    event.block.timestamp.toHexString();
 
   // Check if skillNft already exists, if not create it
   let skillNft = SkillsNft.load(id);

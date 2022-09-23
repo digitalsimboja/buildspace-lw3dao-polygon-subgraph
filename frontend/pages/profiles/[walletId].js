@@ -19,7 +19,7 @@ import { SUBGRAPH_URL } from "../../constants";
 export default function ProfileNFTs({ users }) {
   const router = useRouter();
 
-  // State variables
+   // State variables
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
   const [bldSpaceNFTs, setBldSpaceNFTS] = useState([]);
 
@@ -118,6 +118,8 @@ export default function ProfileNFTs({ users }) {
   const isImage = ["gif", "jpg", "jpeg", "png"]; //you can add more
   const isVideo = ["mpg", "mp2", "mpeg", "mpe", "mpv", "mp4"];
 
+  console.log("leaarweb3NFTS : ", learnWeb3NFTs)
+
   function DisplayImageNFT(url, index) {
     return (
       <Box
@@ -142,7 +144,6 @@ export default function ProfileNFTs({ users }) {
   }
 
   function DisplayVideoNFT(url, index) {
-    console.log(url);
     return (
       <Box
         key={index}
@@ -228,7 +229,7 @@ export default function ProfileNFTs({ users }) {
                     } else if (isVideo.includes(extension)) {
                       return <DisplayVideoNFT url={url} key={index} />;
                     } else {
-                      return null;
+                      return null
                     }
                   })}
               </SimpleGrid>
@@ -250,7 +251,9 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  const walletId = context.params?.walletId;
+  let walletId = context.params?.walletId;
+  walletId = walletId.toLowerCase();
+  
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,
     cache: new InMemoryCache(),
@@ -260,7 +263,7 @@ export async function getStaticProps(context) {
     query: gql`
       query getUserNFTs {
        
-        users(id: "${walletId}") {
+        users(where : {id: "${walletId}"}) {
           id
           skillNFTs {
             id
