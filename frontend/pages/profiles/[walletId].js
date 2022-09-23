@@ -139,6 +139,8 @@ export default function ProfileNFTs({ users }) {
           width="0"
           height="0"
           sizes="100vw"
+          // blurDataURL="/images/path-to-blur-image.jpg"
+          // placeholder="blur"
           style={{ width: "100%", height: "auto" }}
         />
       </Box>
@@ -202,10 +204,10 @@ export default function ProfileNFTs({ users }) {
             <Box as={Container} maxW="7xl" mt={5} p={4}>
               <Divider mt={12} mb={4} />
               <chakra.h3
-                color={"white"}
                 mb={4}
                 fontSize="4xl"
                 fontWeight={"extrabold"}
+                color={"purple:200"}
               >
                 LearnWeb3 NFTs
               </chakra.h3>
@@ -225,7 +227,7 @@ export default function ProfileNFTs({ users }) {
             </Box>
             <Box as={Container} maxW="7xl" mt={5} p={4}>
               <chakra.h3
-                color={"white"}
+                color={"purple:200"}
                 mb={4}
                 fontSize="4xl"
                 fontWeight={"extrabold"}
@@ -243,7 +245,7 @@ export default function ProfileNFTs({ users }) {
                     } else if (isVideo.includes(extension)) {
                       return <DisplayVideoNFT url={url} key={index} />;
                     } else {
-                      return null;
+                      return null
                     }
                   })}
               </SimpleGrid>

@@ -7,6 +7,7 @@ import {
   GridItem,
   VStack,
   Container,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 export default function Header() {
@@ -40,10 +41,10 @@ export default function Header() {
             <Box p={6}>
               <Stack spacing={0} align={"center"} mb={2}>
                 <chakra.h3
-                  color={"white"}
                   mb={4}
                   fontSize="4xl"
                   fontWeight={"extrabold"}
+                  color={useColorModeValue("purple.200", "gray.200")}
                 >
                   My Minted NFTS
                 </chakra.h3>

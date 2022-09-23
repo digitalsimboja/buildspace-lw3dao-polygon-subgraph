@@ -14,8 +14,7 @@ export default function Navbar() {
   return (
     <Box>
       <Flex
-        bg={useColorModeValue("gray.800", "gray.800")}
-        color={'white'}
+        color={"white"}
         minH={"60px"}
         py={{ base: 2 }}
         px={{ base: 4 }}
@@ -26,16 +25,16 @@ export default function Navbar() {
       >
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
           <Link href="/">
-          <Text
-            textAlign={useBreakpointValue({ base: "center", md: "left" })}
-            fontFamily={"heading"}
-            color={'white'}
-          >
-            LearnWeb3DAO
-          </Text>
-
+            <Text
+              textAlign={useBreakpointValue({ base: "center", md: "left" })}
+              fontFamily={"heading"}
+              fontSize="4xl"
+              fontWeight={"bold"}
+              color={useColorModeValue("purple.200", "gray.200")}
+            >
+              LearnWeb3DAO
+            </Text>
           </Link>
-          
         </Flex>
 
         <Stack

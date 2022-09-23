@@ -1,4 +1,4 @@
-import { Box, Heading, Container, Text, Stack } from "@chakra-ui/react";
+import { Box, Heading, Container, Text, Stack, useColorModeValue } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function Hero() {
@@ -15,10 +15,11 @@ export default function Hero() {
             fontWeight={600}
             fontSize={{ base: "2xl", sm: "4xl", md: "6xl" }}
             lineHeight={"110%"}
+            color={useColorModeValue('purple.200', 'gray.200')}
           >
-            Connect your wallet
+            Connect polygon wallet
             <br />
-            <Text as={"span"} color={"green.400"}>
+            <Text as={"span"} color={"pink.500"}>
               to view your NFT collections
             </Text>
           </Heading>
