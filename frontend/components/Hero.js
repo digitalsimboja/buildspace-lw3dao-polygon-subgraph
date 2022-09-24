@@ -17,14 +17,14 @@ export default function Hero() {
             lineHeight={"110%"}
             color={useColorModeValue('purple.200', 'gray.200')}
           >
-            Connect polygon wallet
+            Connect to polygon wallet
             <br />
             <Text as={"span"} color={"pink.500"}>
               to view your NFT collections
             </Text>
           </Heading>
           <Text color={"gray.500"}>
-            Powered by Rainbowkit Wallet Address Manager
+            Your wallet is not connected, switch your network to Polygon
           </Text>
           <Stack
             direction={"column"}

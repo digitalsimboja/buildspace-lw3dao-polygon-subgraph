@@ -121,6 +121,7 @@ export default function ProfileNFTs({ users }) {
   const isVideo = ["mpg", "mp2", "mpeg", "mpe", "mpv", "mp4"];
 
   console.log("leaarweb3NFTS : ", learnWeb3NFTs);
+  console.log("bldSpaceNFTs : ", bldSpaceNFTs);
 
   function DisplayImageNFT(url, index) {
     return (
@@ -139,8 +140,8 @@ export default function ProfileNFTs({ users }) {
           width="0"
           height="0"
           sizes="100vw"
-          // blurDataURL="/images/path-to-blur-image.jpg"
-          // placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOcPHltPQAF6AJU4aqirgAAAABJRU5ErkJggg=="
+          placeholder="blur"
           style={{ width: "100%", height: "auto" }}
         />
       </Box>
@@ -207,7 +208,7 @@ export default function ProfileNFTs({ users }) {
                 mb={4}
                 fontSize="4xl"
                 fontWeight={"extrabold"}
-                color={"purple:200"}
+                color={"white"}
               >
                 LearnWeb3 NFTs
               </chakra.h3>
@@ -227,7 +228,7 @@ export default function ProfileNFTs({ users }) {
             </Box>
             <Box as={Container} maxW="7xl" mt={5} p={4}>
               <chakra.h3
-                color={"purple:200"}
+                color={"white"}
                 mb={4}
                 fontSize="4xl"
                 fontWeight={"extrabold"}
@@ -258,14 +259,16 @@ export default function ProfileNFTs({ users }) {
   );
 }
 
-// Get the Data from Apolloclient with getStatic props
+// Get the path
 export async function getStaticPaths() {
   return {
     paths: [],
-    fallback: true, // See the "fallback" section below
+    fallback: true,
   };
 }
 
+
+// Get the Data from Apolloclient with getStatic props
 export async function getStaticProps(context) {
   let walletId = context.params?.walletId;
   walletId = walletId.toLowerCase();

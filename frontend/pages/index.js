@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { useAccount } from "wagmi";
-import { Box, useColorModeValue } from "@chakra-ui/react";
+import { Box,Container, useColorModeValue } from "@chakra-ui/react";
 import Footer from "../components/Footer";
 import Hero from "../components/Hero";
 import Navbar from "../components/Navbar";
@@ -24,7 +24,8 @@ export default function Home() {
 
   return (
     <>
-      <Box bg={useColorModeValue("gray.800", "gray: 800")}>
+    
+      <Box width={"100vw"} bg={useColorModeValue("gray.800", "gray: 800")} >
         {/* Add the Navbar */}
         <Navbar bg={useColorModeValue("white", "gray.800")} />
         <Hero />
