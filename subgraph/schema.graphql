@@ -1,6 +1,6 @@
 type SkillsNft @entity {
   id: ID!
-  owner: String!
+  owner: Bytes!
   entityOwner: User!
   tokenId: String!
   tokenURI: String!
@@ -8,6 +8,6 @@ type SkillsNft @entity {
 }
 
 type User @entity {
-  id: ID! # User address
+  id: Bytes! # User address
   skillNFTs: [SkillsNft!]! @derivedFrom(field: "entityOwner")
 }

@@ -15,11 +15,13 @@ import {
 import Header from "../../components/Header";
 import Navbar from "../../components/Navbar";
 import { SUBGRAPH_URL } from "../../constants";
+import { useAccount } from "wagmi";
 
 export default function ProfileNFTs({ users }) {
   const router = useRouter();
+  const { isConnected } = useAccount();
 
-  console.log(users);
+  console.log("users: ", users);
 
   // State variables
   const [learnWeb3NFTs, setLearnWeb3NFTs] = useState([]);
@@ -32,6 +34,9 @@ export default function ProfileNFTs({ users }) {
   };
 
   useEffect(() => {
+    if (!isConnected) {
+      router.push("/");
+    }
     async function filterLearnWeb3NFT() {
       // Get the learnWeb3NFT from the data returned from the subgraph
       let learnWeb3Media = await users[0]["skillNFTs"].filter(
@@ -69,7 +74,7 @@ export default function ProfileNFTs({ users }) {
     } else {
       setIsLoading(true);
     }
-  }, [users, router]);
+  }, [isConnected, users, router]);
 
   async function handleLearnWeb3NFTs(...learnWeb3NFTs) {
     // Handle the tokenURI
@@ -267,11 +272,9 @@ export async function getStaticPaths() {
   };
 }
 
-
 // Get the Data from Apolloclient with getStatic props
 export async function getStaticProps(context) {
-  let walletId = context.params?.walletId;
-  walletId = walletId.toLowerCase();
+  const walletId = context.params?.walletId;
 
   const appolloClient = new ApolloClient({
     uri: SUBGRAPH_URL,

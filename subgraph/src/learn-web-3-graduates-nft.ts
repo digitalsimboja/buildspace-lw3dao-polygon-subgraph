@@ -27,7 +27,7 @@ export function handleTransferSingle(event: TransferSingleEvent): void {
   }
 
   // Assign the skillNft to the owner
-  let owner_id = event.params.to.toHex();
+  let owner_id = event.params.to;
   /* If the user does not exist, that is, the transfer is just occurring for the
   first time, create the user */
   let user = User.load(owner_id);

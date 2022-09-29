@@ -24,7 +24,7 @@ export default function Hero() {
             </Text>
           </Heading>
           <Text color={"gray.500"}>
-            Your wallet is not connected, switch your network to Polygon
+            Your wallet is not connected, switch your network to Polygon to view your NFTs
           </Text>
           <Stack
             direction={"column"}
