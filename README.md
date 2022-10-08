@@ -18,7 +18,7 @@ First, clone the Github repository:
 ```bash
 git clone https://github.com/digitalsimboja/buildspace-lw3dao-polygon-subgraph.git
 
-cd learnweb3dao-skillnft
+cd buildspace-lw3dao-polygon-subgraph
 cd subgraph
 npm install
 # or
