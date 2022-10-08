@@ -1,6 +1,8 @@
 # Full stack Profile NFT development with theGraph Protocol and Next.js
 
-This is an example of how to build a full stack application using Graph Protocol and Nextjs
+This is a full stack application subgraph using Graph Protocol and Nextjs
+
+![image info](frontend/public/images/buildspace-polygon-subgraph.png)
 
 ## Getting Started
 
