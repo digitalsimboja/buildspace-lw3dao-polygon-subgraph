@@ -16,7 +16,7 @@ To run this app, ensure you have the following:
 First, clone the Github repository:
 
 ```bash
-git clone https://github.com/digitalsimboja/learnweb3dao-skillnft.git
+git clone https://github.com/digitalsimboja/buildspace-lw3dao-polygon-subgraph.git
 
 cd learnweb3dao-skillnft
 cd subgraph

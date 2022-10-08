@@ -12,7 +12,7 @@ import {
 
 const Logo = () => {
   return (
-    <Image alt="LearnWeb3DAO logo" src='https://learnweb3.io/brand/logo-blue.png' />
+    <Image alt="logo" src='' />
   );
 };
 
@@ -38,7 +38,7 @@ export default function Footer() {
               <Logo color={useColorModeValue('gray.700', 'white')} />
             </Box>
             <Text fontSize={'sm'}>
-              © LearnWeb3DAO. All rights reserved
+              © DigitalSimboja. All rights reserved
             </Text>
           </Stack>
           <Stack align={'flex-start'}>

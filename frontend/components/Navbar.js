@@ -32,7 +32,7 @@ export default function Navbar() {
               fontWeight={"bold"}
               color={useColorModeValue("purple.200", "gray.200")}
             >
-              LearnWeb3DAO
+              LW3DAO
             </Text>
           </Link>
         </Flex>
